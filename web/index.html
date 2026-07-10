@@ -1,4 +1,4 @@
-<title>NEBULA — hear the dark side of the catalog</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="NEBULA - a flyable galaxy of the music catalog. Find the songs you would love that nobody plays."></head><body><title>NEBULA — hear the dark side of the catalog</title>
 <style>
   :root {
     --space: #05060e; --panel: rgba(10, 13, 26, .82); --line: rgba(150, 170, 220, .16);
@@ -592,3 +592,128 @@ document.getElementById("cratecopy").addEventListener("click", e => {
 });
 crateCount();
 </script>
+<style>
+  #spotifyzone { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 12px; }
+  #spotifyzone .btn { width: 100%; border: 0; border-radius: 8px; padding: 10px;
+    font: 600 12px ui-monospace, Menlo, monospace; letter-spacing: .08em; cursor: pointer; margin-bottom: 7px; }
+  .btn.green { background: #1fdf64; color: #04240f; }
+  .btn.ghost { background: rgba(150,170,220,.08); border: 1px solid var(--line) !important; color: var(--ink); }
+  #spotifyzone input, #spotifyzone select { width: 100%; background: rgba(150,170,220,.06); border: 1px solid var(--line);
+    color: var(--ink); border-radius: 8px; padding: 9px 10px; font-size: 12px; margin-bottom: 7px; }
+  #spotifyzone select option { background: #10131f; }
+  #sp-status { font-size: 10.5px; color: var(--faint); min-height: 14px; margin-top: 2px; }
+  #sp-status.ok { color: #1fdf64; }
+  #sp-setup summary { font-size: 10.5px; color: var(--faint); cursor: pointer; margin-bottom: 6px; }
+  #sp-setup p { font-size: 10.5px; color: var(--faint); line-height: 1.5; margin: 0 0 6px; }
+</style>
+<script>
+/* NEBULA Web — real Spotify export via Authorization Code + PKCE (no server). */
+(function spotifyExport() {
+  const zone = document.createElement("div");
+  zone.id = "spotifyzone";
+  document.getElementById("cratepanel").appendChild(zone);
+  const REDIRECT = location.origin + location.pathname;
+  const SCOPES = "playlist-read-private playlist-modify-private playlist-modify-public";
+  const cid = () => localStorage.getItem("nebula_spotify_cid") || "";
+  let token = sessionStorage.getItem("nebula_sp_token") || null;
+
+  function render() {
+    if (!cid()) {
+      zone.innerHTML = `
+        <details id="sp-setup" open><summary>ONE-TIME SETUP — CONNECT A SPOTIFY APP</summary>
+        <p>1 · Create an app at <b>developer.spotify.com/dashboard</b> (free).<br>
+           2 · Add this exact Redirect URI: <b>${REDIRECT}</b><br>
+           3 · Paste the app's Client ID below. It's public-safe and stored only in your browser.</p></details>
+        <input id="sp-cid" placeholder="Spotify Client ID" autocomplete="off">
+        <button class="btn ghost" id="sp-save">SAVE CLIENT ID</button>
+        <div id="sp-status"></div>`;
+      zone.querySelector("#sp-save").onclick = () => {
+        const v = zone.querySelector("#sp-cid").value.trim();
+        if (v) { localStorage.setItem("nebula_spotify_cid", v); render(); }
+      };
+    } else if (!token) {
+      zone.innerHTML = `
+        <button class="btn green" id="sp-connect">⏻ CONNECT SPOTIFY</button>
+        <div id="sp-status">links your account so the crate can become a real playlist</div>`;
+      zone.querySelector("#sp-connect").onclick = login;
+    } else {
+      zone.innerHTML = `
+        <input id="sp-name" value="NEBULA finds" aria-label="new playlist name">
+        <button class="btn green" id="sp-create">EXPORT CRATE → NEW PLAYLIST</button>
+        <select id="sp-list" aria-label="choose an existing playlist"><option>loading your playlists…</option></select>
+        <button class="btn ghost" id="sp-add">ADD CRATE TO SELECTED PLAYLIST</button>
+        <div id="sp-status" class="ok">connected ✓</div>`;
+      zone.querySelector("#sp-create").onclick = () => exportCrate(null, zone.querySelector("#sp-name").value || "NEBULA finds");
+      zone.querySelector("#sp-add").onclick = () => exportCrate(zone.querySelector("#sp-list").value, null);
+      loadPlaylists();
+    }
+  }
+  const status = (m, ok) => { const el = zone.querySelector("#sp-status"); if (el) { el.textContent = m; el.classList.toggle("ok", !!ok); } };
+
+  async function login() {
+    const verifier = [...crypto.getRandomValues(new Uint8Array(48))].map(b => "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"[b % 62]).join("");
+    sessionStorage.setItem("nebula_sp_verifier", verifier);
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier));
+    const challenge = btoa(String.fromCharCode(...new Uint8Array(digest))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    location.href = "https://accounts.spotify.com/authorize?" + new URLSearchParams({
+      client_id: cid(), response_type: "code", redirect_uri: REDIRECT,
+      scope: SCOPES, code_challenge_method: "S256", code_challenge: challenge,
+    });
+  }
+  async function handleCallback() {
+    const code = new URLSearchParams(location.search).get("code");
+    if (!code) return;
+    history.replaceState({}, "", REDIRECT);
+    const r = await fetch("https://accounts.spotify.com/api/token", {
+      method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "authorization_code", code, redirect_uri: REDIRECT,
+        client_id: cid(), code_verifier: sessionStorage.getItem("nebula_sp_verifier") || "",
+      }),
+    }).then(r => r.json());
+    if (r.access_token) { token = r.access_token; sessionStorage.setItem("nebula_sp_token", token); }
+  }
+  async function api(path, opts = {}) {
+    const r = await fetch("https://api.spotify.com/v1" + path, {
+      ...opts, headers: { Authorization: "Bearer " + token, "Content-Type": "application/json", ...(opts.headers || {}) },
+    });
+    if (r.status === 401) { token = null; sessionStorage.removeItem("nebula_sp_token"); render(); throw new Error("session expired — reconnect"); }
+    return r.status === 204 ? {} : r.json();
+  }
+  async function loadPlaylists() {
+    try {
+      const me = await api("/me"); zone.dataset.uid = me.id;
+      const pl = await api("/me/playlists?limit=50");
+      const sel = zone.querySelector("#sp-list");
+      sel.innerHTML = pl.items.filter(p => p.owner.id === me.id)
+        .map(p => `<option value="${p.id}">${p.name} (${p.tracks.total})</option>`).join("") || "<option value=''>no editable playlists</option>";
+    } catch (e) { status(e.message); }
+  }
+  async function exportCrate(playlistId, newName) {
+    if (!crate.length) { status("crate is empty — click stars and + Crate first"); return; }
+    try {
+      status("finding your tracks on Spotify…");
+      const uris = [];
+      for (const c of crate) {
+        const q = encodeURIComponent(`track:"${c.title}" artist:"${c.artist.split(",")[0]}"`);
+        const r = await api(`/search?q=${q}&type=track&limit=1`);
+        const hit = r.tracks?.items?.[0];
+        if (hit) uris.push(hit.uri);
+        await new Promise(res => setTimeout(res, 120));
+      }
+      if (!uris.length) { status("couldn't match any tracks"); return; }
+      if (!playlistId) {
+        const p = await api(`/users/${zone.dataset.uid}/playlists`, {
+          method: "POST", body: JSON.stringify({ name: newName, public: false, description: "Hidden gems found in NEBULA — taste-embedding × obscurity." }),
+        });
+        playlistId = p.id;
+      }
+      await api(`/playlists/${playlistId}/tracks`, { method: "POST", body: JSON.stringify({ uris }) });
+      status(`exported ${uris.length}/${crate.length} tracks ✓ — open Spotify`, true);
+      loadPlaylists();
+    } catch (e) { status("export failed: " + e.message); }
+  }
+  handleCallback().then(render);
+})();
+</script>
+</body></html>

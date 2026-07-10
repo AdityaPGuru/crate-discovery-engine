@@ -215,7 +215,7 @@ const cam = { yaw: 0.6, pitch: 0.25, dist: 2.35, tYaw: 0.6, tPitch: 0.25, tDist:
 let beacon = null;   // {x,y,z}
 let landingGone = false;
 let mouse = { x: 0.5, y: 0.5 }, hovered = null;
-let dragging = false, lastMX = 0, lastMY = 0, autoSpin = !reduced;
+let dragging = false, lastMX = 0, lastMY = 0, autoSpin = true; // spins from first frame until the user grabs it
 
 function project(p) {
   const cy = Math.cos(cam.yaw), sy = Math.sin(cam.yaw);
