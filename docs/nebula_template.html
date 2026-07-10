@@ -558,7 +558,7 @@ document.getElementById("c-crate").addEventListener("click", e => {
     crate.splice(idx, 1);
     e.currentTarget.textContent = "+ Crate";
   } else {
-    crate.push({ i: cardStar.i, title: cardStar.title, artist: cardStar.artist });
+    crate.push({ i: cardStar.i, title: cardStar.title, artist: cardStar.artist, uri: cardStar.uri });
     e.currentTarget.textContent = "− Uncrate";
     cardStar.flare = 2.0;
   }

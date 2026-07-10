@@ -91,49 +91,68 @@
     return p;
   }
 
+  const GALAXY_CACHE = "nebula_galaxy_v2";
   async function buildUserGalaxy() {
     document.getElementById("dock").style.display = "none";   // no seed bar — it's automatic
     try {
+      // A successful build is cached — reloads are instant and make ZERO
+      // mining calls, which also keeps us clear of Spotify's rate limits.
+      let cached = null;
+      try { cached = JSON.parse(localStorage.getItem(GALAXY_CACHE) || "null"); } catch {}
+      let prof, pool;
+      if (cached && Date.now() - cached.at < 6 * 3600e3 && cached.pool?.length >= 10) {
+        hintMsg("LOADING YOUR GALAXY FROM CACHE…");
+        prof = { via: cached.via + " (cached)", artists: cached.artists };
+        pool = cached.pool;
+      } else {
       hintMsg("READING YOUR SPOTIFY — MAPPING YOUR GALAXY…");
-      const prof = await tasteProfile();
+      prof = await tasteProfile();
       const topArtists = prof.artists;
       const knownIds = new Set(prof.tracks.map(t => t.id));
       const norm = s => s.toLowerCase().replace(/\s*[\(\[].*$/, "").replace(/\s*-\s*(live|remaster|acoustic|remix|sped|slowed).*$/i, "").trim();
       const knownNames = new Set(prof.tracks.map(t => norm(t.name)));
 
-      // Deep cuts via /search per artist — a proven-working endpoint that
-      // returns popularity directly (no album-crawl, no /tracks batch).
-      hintMsg(`MINING THE CATALOGS OF ${topArtists.length} ARTISTS YOU LOVE…`);
+      const mineArtists = topArtists.slice(0, 10);   // fewer calls = no throttling
+      hintMsg(`MINING THE CATALOGS OF ${mineArtists.length} ARTISTS YOU LOVE…`);
       const byName = new Map();
-      let fails = 0, calls = 0, firstErr = null;
-      for (const [ai, artist] of topArtists.entries()) {
-        // Live-probed against the migrated API: /search limit caps at 10 and
-        // pages come back HALF-full — page in 10s, stop only on empty.
-        for (let offset = 0; offset <= 110; offset += 10) {
+      let fails = 0, calls = 0, firstErr = null, rateLimited = 0;
+      outer: for (const [ai, artist] of mineArtists.entries()) {
+        // Live-probed: /search caps limit at 10, pages come back half-full —
+        // stop per-artist at 12 finds or an empty page; api() itself waits
+        // out 429s, so a persistent break here means something worse.
+        let got = 0;
+        for (let offset = 0; offset <= 50 && got < 12; offset += 10) {
           calls++;
           try {
             const q = encodeURIComponent(`artist:"${artist.name}"`);
             const r = await api(`/search?q=${q}&type=track&limit=10&offset=${offset}`);
+            rateLimited = 0;
             const items = r.tracks?.items || [];
             for (const t of items) {
               if (!t || t.artists?.[0]?.id !== artist.id) continue;
               if (knownIds.has(t.id) || knownNames.has(norm(t.name))) continue;
               const key = artist.id + "|" + norm(t.name);
-              if (!byName.has(key)) byName.set(key, {
-                id: t.id, name: t.name, artist, artistRank: ai,
-                duration_ms: t.duration_ms, explicit: t.explicit, popularity: t.popularity ?? 50,
-              });
+              if (!byName.has(key)) {
+                byName.set(key, {
+                  id: t.id, name: t.name, artistId: artist.id, artistName: artist.name,
+                  genres: artist.genres || [], artistRank: ai,
+                  duration_ms: t.duration_ms, explicit: t.explicit, popularity: t.popularity ?? 50,
+                });
+                got++;
+              }
             }
             if (items.length === 0) break;   // genuinely out of catalog
-          } catch (e) { fails++; firstErr ??= e.message; }
-          await new Promise(r2 => setTimeout(r2, 50));
+          } catch (e) {
+            fails++; firstErr ??= e.message;
+            if (/429/.test(e.message) && ++rateLimited >= 4) break outer;
+          }
+          await new Promise(r2 => setTimeout(r2, 120));
         }
       }
       // Adaptive obscurity cutoff: prefer truly hidden, loosen only if thin.
       let all = [...byName.values()].sort((a, b) => a.popularity - b.popularity);
-      let cap = 70, pool = all.filter(t => t.popularity <= cap);
+      let cap = 70; pool = all.filter(t => t.popularity <= cap);
       while (pool.length < 80 && cap < 96) { cap += 5; pool = all.filter(t => t.popularity <= cap); }
-      const popById = new Map(pool.map(t => [t.id, t.popularity]));
       // Drop already-saved tracks (tolerant if the endpoint is blocked).
       const savedMask = [];
       for (let i = 0; i < pool.length; i += 50) {
@@ -143,23 +162,40 @@
       }
       pool = pool.filter((t, i) => !savedMask[i]).slice(0, 400);
       if (pool.length < 10) {
+        if (rateLimited >= 4) {
+          // Don't make the user do anything — cool off and go again ourselves.
+          for (let s = 45; s > 0; s--) {
+            hintMsg(`SPOTIFY SPEED LIMIT — AUTO-RETRYING YOUR GALAXY IN ${s}s…`);
+            await new Promise(r2 => setTimeout(r2, 1000));
+          }
+          return buildUserGalaxy();
+        }
         hintMsg(fails ? `mining blocked (${fails}/${calls} calls failed): ${firstErr}` :
           `only ${pool.length} unknown tracks found across your artists — you really do know their catalogs`, true);
         return;
       }
+      try {
+        localStorage.setItem(GALAXY_CACHE, JSON.stringify({
+          at: Date.now(), via: prof.via, pool,
+          artists: prof.artists.map(a => ({ id: a.id, name: a.name, genres: a.genres || [] })),
+        }));
+      } catch {}
+      }
+      const popById = new Map(pool.map(t => [t.id, t.popularity]));
+      const topArtists = prof.artists;
 
       // Rebuild the star field: THEIR songs only.
       stars.length = 0;
       const vecs = [];
       pool.forEach((t, i) => {
         const obs = 1 - (popById.get(t.id) ?? 50) / 100;
-        const th = t.artistRank * 2.399963 + (hashRnd(t.artist.id, 1) - 0.5) * 0.4;
+        const th = t.artistRank * 2.399963 + (hashRnd(t.artistId, 1) - 0.5) * 0.4;
         const ph = ((t.artistRank * 0.618) % 1 - 0.5) * 1.0 + (hashRnd(t.id, 2) - 0.5) * 0.3;
         const r = 0.30 + 0.70 * obs;
         const jx = (hashRnd(t.id, 3) - 0.5) * 0.16, jy = (hashRnd(t.id, 4) - 0.5) * 0.16, jz = (hashRnd(t.id, 5) - 0.5) * 0.16;
         stars.push({
           x: Math.cos(th) * Math.cos(ph) * r + jx, y: Math.sin(ph) * r * 0.8 + jy, z: Math.sin(th) * Math.cos(ph) * r + jz,
-          g: GENRE_BUCKET(t.artist.genres), obs, title: t.name, artist: t.artist.name,
+          g: GENRE_BUCKET(t.genres), obs, title: t.name, artist: t.artistName,
           i, tw: hashRnd(t.id, 6) * 6.28, flare: 0, gem: false, uri: "spotify:track:" + t.id,
           affinity: 1 / (1 + t.artistRank / 4),
         });
@@ -187,11 +223,12 @@
 
       // Right sidebar: their top 10 — click opens the song card directly.
       document.querySelector("#gems .h").textContent = "YOUR TOP 10 — SONGS YOU'LL LOVE";
+      const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
       const list = document.getElementById("gemlist");
       list.innerHTML = top.map((r, i) => `
         <li data-i="${r.s.i}">
           <span class="rk mono">${String(i + 1).padStart(2, "0")}</span>
-          <span><span class="t">${r.s.title}</span><span class="a">${r.s.artist}</span></span>
+          <span><span class="t">${esc(r.s.title)}</span><span class="a">${esc(r.s.artist)}</span></span>
           <span class="m mono">${Math.round(r.s.obs * 100)}% hidden</span>
         </li>`).join("");
       list.querySelectorAll("li").forEach(li =>
@@ -301,11 +338,21 @@
       }),
     }).then(r => r.json());
     if (r.access_token) { token = r.access_token; sessionStorage.setItem("nebula_sp_token", token); }
+    else hintMsg("Spotify login failed: " + (r.error_description || r.error || "unknown"), true);
   }
-  async function api(path, opts = {}) {
+  async function api(path, opts = {}, _retry = 0) {
     const r = await fetch("https://api.spotify.com/v1" + path, {
       ...opts, headers: { Authorization: "Bearer " + token, "Content-Type": "application/json", ...(opts.headers || {}) },
     });
+    if (r.status === 429 && _retry < 5) {
+      // Ride out Spotify's speed limit instead of failing the build.
+      const wait = Math.min(30, parseInt(r.headers.get("Retry-After") || "0", 10) || (5 * (_retry + 1)));
+      for (let s = wait; s > 0; s--) {
+        hintMsg(`SPOTIFY SPEED LIMIT — RESUMING IN ${s}s, YOUR GALAXY IS STILL COMING…`);
+        await new Promise(res => setTimeout(res, 1000));
+      }
+      return api(path, opts, _retry + 1);
+    }
     if (r.status === 401) { token = null; sessionStorage.removeItem("nebula_sp_token"); render(); throw new Error("session expired — reconnect"); }
     if (r.status === 204) return {};
     const body = await r.json().catch(() => ({}));
@@ -334,8 +381,7 @@
       status("finding your tracks on Spotify…");
       const uris = [];
       for (const c of crate) {
-        const st = typeof stars !== "undefined" && stars[c.i];
-        if (st && st.uri && st.title === c.title) { uris.push(st.uri); continue; }
+        if (c.uri) { uris.push(c.uri); continue; }   // exact identity, survives galaxy rebuilds
         const cleanTitle = c.title.replace(/\s*[\(\[](feat|ft|with|from)\.?[^\)\]]*[\)\]]/gi, "").trim();
         const q = encodeURIComponent(`track:"${cleanTitle}" artist:"${c.artist.split(",")[0]}"`);
         const r = await api(`/search?q=${q}&type=track&limit=1`);
