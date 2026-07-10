@@ -105,26 +105,34 @@
       // returns popularity directly (no album-crawl, no /tracks batch).
       hintMsg(`MINING THE CATALOGS OF ${topArtists.length} ARTISTS YOU LOVE…`);
       const byName = new Map();
+      let fails = 0, calls = 0, firstErr = null;
       for (const [ai, artist] of topArtists.entries()) {
-        for (const offset of [0, 50]) {
+        // Big artists' search results are popularity-sorted, so the hidden
+        // stuff lives deep — dig 4 pages per artist and filter later.
+        for (const offset of [0, 50, 100, 150]) {
+          calls++;
           try {
             const q = encodeURIComponent(`artist:"${artist.name}"`);
             const r = await api(`/search?q=${q}&type=track&limit=50&offset=${offset}`);
-            for (const t of (r.tracks?.items || [])) {
+            const items = r.tracks?.items || [];
+            for (const t of items) {
               if (!t || t.artists?.[0]?.id !== artist.id) continue;
               if (knownIds.has(t.id) || knownNames.has(norm(t.name))) continue;
-              if ((t.popularity ?? 100) > 70) continue;
               const key = artist.id + "|" + norm(t.name);
               if (!byName.has(key)) byName.set(key, {
                 id: t.id, name: t.name, artist, artistRank: ai,
                 duration_ms: t.duration_ms, explicit: t.explicit, popularity: t.popularity ?? 50,
               });
             }
-          } catch { /* one bad page shouldn't kill the galaxy */ }
+            if (items.length < 50) break;   // end of this artist's catalog
+          } catch (e) { fails++; firstErr ??= e.message; }
           await new Promise(r2 => setTimeout(r2, 70));
         }
       }
-      let pool = [...byName.values()];
+      // Adaptive obscurity cutoff: prefer truly hidden, loosen only if thin.
+      let all = [...byName.values()].sort((a, b) => a.popularity - b.popularity);
+      let cap = 70, pool = all.filter(t => t.popularity <= cap);
+      while (pool.length < 80 && cap < 96) { cap += 5; pool = all.filter(t => t.popularity <= cap); }
       const popById = new Map(pool.map(t => [t.id, t.popularity]));
       // Drop already-saved tracks (tolerant if the endpoint is blocked).
       const savedMask = [];
@@ -134,7 +142,11 @@
         catch { savedMask.push(...pool.slice(i, i + 50).map(() => false)); }
       }
       pool = pool.filter((t, i) => !savedMask[i]).slice(0, 400);
-      if (pool.length < 10) { hintMsg("couldn't find enough hidden tracks from your artists — listen to more and come back", true); return; }
+      if (pool.length < 10) {
+        hintMsg(fails ? `mining blocked (${fails}/${calls} calls failed): ${firstErr}` :
+          `only ${pool.length} unknown tracks found across your artists — you really do know their catalogs`, true);
+        return;
+      }
 
       // Rebuild the star field: THEIR songs only.
       stars.length = 0;
