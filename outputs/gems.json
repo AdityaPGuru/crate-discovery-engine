@@ -1,0 +1,3481 @@
+{
+ "method": "PU-aware LR + grouped-artist bootstrap (n=300) percentile stability intervals; discovery = pref_pct x obscurity^g",
+ "cv_ablations_leave_one_artist_out": {
+  "meta": {
+   "auc": 0.544,
+   "avg_precision": 0.446,
+   "lift_at_20pct": 1.1
+  },
+  "text": {
+   "auc": 0.55,
+   "avg_precision": 0.394,
+   "lift_at_20pct": 1.1
+  },
+  "both": {
+   "auc": 0.606,
+   "avg_precision": 0.452,
+   "lift_at_20pct": 1.3
+  }
+ },
+ "gamma_top15_jaccard": 0.43,
+ "n_candidates": 321,
+ "picks": [
+  {
+   "title": "On Your Side",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "deezer_rank": 197208,
+   "obscurity": 0.613,
+   "pref_lo": 0.728,
+   "pref_med": 0.883,
+   "pref_hi": 0.988,
+   "discovery": 0.541,
+   "class": "safe_gem"
+  },
+  {
+   "title": "Starting Again",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "deezer_rank": 162946,
+   "obscurity": 0.681,
+   "pref_lo": 0.673,
+   "pref_med": 0.872,
+   "pref_hi": 0.975,
+   "discovery": 0.594,
+   "class": "safe_gem"
+  },
+  {
+   "title": "Heaven Only Knows",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "deezer_rank": 69257,
+   "obscurity": 0.898,
+   "pref_lo": 0.582,
+   "pref_med": 0.857,
+   "pref_hi": 0.96,
+   "discovery": 0.769,
+   "class": "safe_gem"
+  },
+  {
+   "title": "Vagabond",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "deezer_rank": 153920,
+   "obscurity": 0.721,
+   "pref_lo": 0.572,
+   "pref_med": 0.794,
+   "pref_hi": 0.898,
+   "discovery": 0.573,
+   "class": "safe_gem"
+  },
+  {
+   "title": "I Left My Heart Strings near San Francisco",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "deezer_rank": 64125,
+   "obscurity": 0.926,
+   "pref_lo": 0.548,
+   "pref_med": 0.794,
+   "pref_hi": 0.907,
+   "discovery": 0.735,
+   "class": "safe_gem"
+  },
+  {
+   "title": "Calypso",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "deezer_rank": 154537,
+   "obscurity": 0.712,
+   "pref_lo": 0.547,
+   "pref_med": 0.754,
+   "pref_hi": 0.9,
+   "discovery": 0.537,
+   "class": "safe_gem"
+  },
+  {
+   "title": "Jellyfish",
+   "artist": "Sunset Rollercoaster",
+   "genre": "Alternative",
+   "deezer_rank": 167273,
+   "obscurity": 0.669,
+   "pref_lo": 0.455,
+   "pref_med": 0.684,
+   "pref_hi": 0.816,
+   "discovery": 0.457,
+   "class": "safe_gem"
+  },
+  {
+   "title": "All Dressed Up",
+   "artist": "Hazel English",
+   "genre": "Alternative",
+   "deezer_rank": 146037,
+   "obscurity": 0.74,
+   "pref_lo": 0.439,
+   "pref_med": 0.763,
+   "pref_hi": 0.929,
+   "discovery": 0.565,
+   "class": "safe_gem"
+  },
+  {
+   "title": "Denny's Garage",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "deezer_rank": 137436,
+   "obscurity": 0.755,
+   "pref_lo": 0.37,
+   "pref_med": 0.511,
+   "pref_hi": 0.642,
+   "discovery": 0.386,
+   "class": "safe_gem"
+  },
+  {
+   "title": "Did You Love Somebody",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "deezer_rank": 210290,
+   "obscurity": 0.57,
+   "pref_lo": 0.336,
+   "pref_med": 0.713,
+   "pref_hi": 0.866,
+   "discovery": 0.406,
+   "class": "safe_gem"
+  },
+  {
+   "title": "Hoe-nouns",
+   "artist": "Smino",
+   "genre": "Hip-Hop/Rap",
+   "deezer_rank": 208069,
+   "obscurity": 0.576,
+   "pref_lo": 0.283,
+   "pref_med": 0.804,
+   "pref_hi": 0.985,
+   "discovery": 0.463,
+   "class": "safe_gem"
+  },
+  {
+   "title": "Daunt",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "deezer_rank": 211895,
+   "obscurity": 0.567,
+   "pref_lo": 0.271,
+   "pref_med": 0.469,
+   "pref_hi": 0.651,
+   "discovery": 0.266,
+   "class": "safe_gem"
+  },
+  {
+   "title": "Campbell",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "deezer_rank": 123150,
+   "obscurity": 0.774,
+   "pref_lo": 0.05,
+   "pref_med": 0.349,
+   "pref_hi": 0.997,
+   "discovery": 0.27,
+   "class": "moonshot"
+  },
+  {
+   "title": "LOVE + POP",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "deezer_rank": 197473,
+   "obscurity": 0.61,
+   "pref_lo": 0.155,
+   "pref_med": 0.785,
+   "pref_hi": 0.997,
+   "discovery": 0.479,
+   "class": "moonshot"
+  },
+  {
+   "title": "Walk Away as the Door Slams",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "deezer_rank": 153480,
+   "obscurity": 0.728,
+   "pref_lo": 0.159,
+   "pref_med": 0.751,
+   "pref_hi": 0.994,
+   "discovery": 0.546,
+   "class": "moonshot"
+  },
+  {
+   "title": "PDA",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "deezer_rank": 109798,
+   "obscurity": 0.811,
+   "pref_lo": 0.258,
+   "pref_med": 0.95,
+   "pref_hi": 0.991,
+   "discovery": 0.771,
+   "class": "moonshot"
+  },
+  {
+   "title": "time (a dream deferred)",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "deezer_rank": 154500,
+   "obscurity": 0.715,
+   "pref_lo": 0.093,
+   "pref_med": 0.414,
+   "pref_hi": 0.988,
+   "discovery": 0.296,
+   "class": "moonshot"
+  },
+  {
+   "title": "Deadbeat Girl",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "deezer_rank": 54307,
+   "obscurity": 0.947,
+   "pref_lo": 0.36,
+   "pref_med": 0.925,
+   "pref_hi": 0.981,
+   "discovery": 0.877,
+   "class": "moonshot"
+  },
+  {
+   "title": "Silhouette",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "deezer_rank": 207255,
+   "obscurity": 0.579,
+   "pref_lo": 0.019,
+   "pref_med": 0.632,
+   "pref_hi": 0.978,
+   "discovery": 0.366,
+   "class": "moonshot"
+  },
+  {
+   "title": "Thursday",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "deezer_rank": 185408,
+   "obscurity": 0.644,
+   "pref_lo": 0.295,
+   "pref_med": 0.771,
+   "pref_hi": 0.972,
+   "discovery": 0.497,
+   "class": "moonshot"
+  }
+ ],
+ "frontier": [
+  {
+   "title": "Bathroom",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.003,
+   "pref_med": 0.1,
+   "pref_lo": 0.012,
+   "pref_hi": 0.586,
+   "discovery": 0.0
+  },
+  {
+   "title": "Hotel",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.0,
+   "pref_med": 0.115,
+   "pref_lo": 0.025,
+   "pref_hi": 0.621,
+   "discovery": 0.0
+  },
+  {
+   "title": "Love You Right",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.077,
+   "pref_med": 0.117,
+   "pref_lo": 0.044,
+   "pref_hi": 0.748,
+   "discovery": 0.009
+  },
+  {
+   "title": "Fall in Love with You.",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.025,
+   "pref_med": 0.112,
+   "pref_lo": 0.022,
+   "pref_hi": 0.885,
+   "discovery": 0.003
+  },
+  {
+   "title": "Every Night",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.108,
+   "pref_med": 0.084,
+   "pref_lo": 0.015,
+   "pref_hi": 0.782,
+   "discovery": 0.009
+  },
+  {
+   "title": "Pretend Lovers",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.04,
+   "pref_med": 0.187,
+   "pref_lo": 0.071,
+   "pref_hi": 0.77,
+   "discovery": 0.008
+  },
+  {
+   "title": "Talk 2 Me",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.037,
+   "pref_med": 0.131,
+   "pref_lo": 0.037,
+   "pref_hi": 0.894,
+   "discovery": 0.005
+  },
+  {
+   "title": "Exscape",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.412,
+   "pref_med": 0.1,
+   "pref_lo": 0.022,
+   "pref_hi": 0.813,
+   "discovery": 0.041
+  },
+  {
+   "title": "Altitude",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.022,
+   "pref_med": 0.109,
+   "pref_lo": 0.044,
+   "pref_hi": 0.76,
+   "discovery": 0.002
+  },
+  {
+   "title": "Destroy Myself Just For You",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.028,
+   "pref_med": 0.098,
+   "pref_lo": 0.028,
+   "pref_hi": 0.792,
+   "discovery": 0.003
+  },
+  {
+   "title": "Don't You Love Me? - A COLORS SHOW",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.161,
+   "pref_med": 0.229,
+   "pref_lo": 0.034,
+   "pref_hi": 0.794,
+   "discovery": 0.037
+  },
+  {
+   "title": "Amor",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.062,
+   "pref_med": 0.093,
+   "pref_lo": 0.025,
+   "pref_hi": 0.611,
+   "discovery": 0.006
+  },
+  {
+   "title": "SCREAM MY NAME",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.201,
+   "pref_med": 0.115,
+   "pref_lo": 0.047,
+   "pref_hi": 0.783,
+   "discovery": 0.023
+  },
+  {
+   "title": "love you more than me",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.074,
+   "pref_med": 0.118,
+   "pref_lo": 0.031,
+   "pref_hi": 0.857,
+   "discovery": 0.009
+  },
+  {
+   "title": "Blame",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.173,
+   "pref_med": 0.136,
+   "pref_lo": 0.059,
+   "pref_hi": 0.677,
+   "discovery": 0.023
+  },
+  {
+   "title": "Who Did You Touch?",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.149,
+   "pref_med": 0.15,
+   "pref_lo": 0.028,
+   "pref_hi": 0.636,
+   "discovery": 0.022
+  },
+  {
+   "title": "I Know I Failed You",
+   "artist": "dj gummy bear",
+   "genre": "R&B/Soul",
+   "obscurity": 0.31,
+   "pref_med": 0.14,
+   "pref_lo": 0.006,
+   "pref_hi": 0.75,
+   "discovery": 0.043
+  },
+  {
+   "title": "Do You Remember?",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.455,
+   "pref_med": 0.145,
+   "pref_lo": 0.065,
+   "pref_hi": 0.723,
+   "discovery": 0.066
+  },
+  {
+   "title": "Dance",
+   "artist": "dj gummy bear",
+   "genre": "R&B/Soul",
+   "obscurity": 0.22,
+   "pref_med": 0.073,
+   "pref_lo": 0.012,
+   "pref_hi": 0.798,
+   "discovery": 0.016
+  },
+  {
+   "title": "And i'd go a thousand miles",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.09,
+   "pref_med": 0.083,
+   "pref_lo": 0.016,
+   "pref_hi": 0.798,
+   "discovery": 0.007
+  },
+  {
+   "title": "Devotion",
+   "artist": "dj gummy bear",
+   "genre": "R&B/Soul",
+   "obscurity": 0.241,
+   "pref_med": 0.146,
+   "pref_lo": 0.019,
+   "pref_hi": 0.851,
+   "discovery": 0.035
+  },
+  {
+   "title": "Call U Tomorrow",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.111,
+   "pref_med": 0.093,
+   "pref_lo": 0.028,
+   "pref_hi": 0.62,
+   "discovery": 0.01
+  },
+  {
+   "title": "Is it a Crime?",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.294,
+   "pref_med": 0.15,
+   "pref_lo": 0.059,
+   "pref_hi": 0.676,
+   "discovery": 0.044
+  },
+  {
+   "title": "Last Dance",
+   "artist": "Montell Fish",
+   "genre": "R&B/Soul",
+   "obscurity": 0.121,
+   "pref_med": 0.14,
+   "pref_lo": 0.059,
+   "pref_hi": 0.658,
+   "discovery": 0.017
+  },
+  {
+   "title": "Pretty Girls",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.557,
+   "pref_med": 0.717,
+   "pref_lo": 0.452,
+   "pref_hi": 0.829,
+   "discovery": 0.399
+  },
+  {
+   "title": "Lucky Love",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.69,
+   "pref_med": 0.843,
+   "pref_lo": 0.237,
+   "pref_hi": 0.957,
+   "discovery": 0.582
+  },
+  {
+   "title": "Jellyfish",
+   "artist": "Sunset Rollercoaster",
+   "genre": "Alternative",
+   "obscurity": 0.669,
+   "pref_med": 0.684,
+   "pref_lo": 0.455,
+   "pref_hi": 0.816,
+   "discovery": 0.457
+  },
+  {
+   "title": "I Feel Best When I'm Alone",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.588,
+   "pref_med": 0.631,
+   "pref_lo": 0.408,
+   "pref_hi": 0.795,
+   "discovery": 0.371
+  },
+  {
+   "title": "Della Reese at the Movies",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.641,
+   "pref_med": 0.664,
+   "pref_lo": 0.483,
+   "pref_hi": 0.791,
+   "discovery": 0.425
+  },
+  {
+   "title": "Heaven Only Knows",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.898,
+   "pref_med": 0.857,
+   "pref_lo": 0.582,
+   "pref_hi": 0.96,
+   "discovery": 0.769
+  },
+  {
+   "title": "The Recluse",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.848,
+   "pref_med": 0.709,
+   "pref_lo": 0.458,
+   "pref_hi": 0.863,
+   "discovery": 0.601
+  },
+  {
+   "title": "Breakfast in Bed",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.687,
+   "pref_med": 0.754,
+   "pref_lo": 0.282,
+   "pref_hi": 0.922,
+   "discovery": 0.518
+  },
+  {
+   "title": "Making Chit Chat with a Stranger at a Dinner Party",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.824,
+   "pref_med": 0.771,
+   "pref_lo": 0.099,
+   "pref_hi": 0.963,
+   "discovery": 0.635
+  },
+  {
+   "title": "Boylife",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.978,
+   "pref_med": 0.696,
+   "pref_lo": 0.257,
+   "pref_hi": 0.894,
+   "discovery": 0.681
+  },
+  {
+   "title": "Show Me How You Feel (Eros)",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.839,
+   "pref_med": 0.71,
+   "pref_lo": 0.386,
+   "pref_hi": 0.845,
+   "discovery": 0.596
+  },
+  {
+   "title": "Bad Bonez",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.672,
+   "pref_med": 0.528,
+   "pref_lo": 0.23,
+   "pref_hi": 0.819,
+   "discovery": 0.355
+  },
+  {
+   "title": "Fiend",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.981,
+   "pref_med": 0.688,
+   "pref_lo": 0.286,
+   "pref_hi": 0.903,
+   "discovery": 0.676
+  },
+  {
+   "title": "I Left My Heart Strings near San Francisco",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.926,
+   "pref_med": 0.794,
+   "pref_lo": 0.548,
+   "pref_hi": 0.907,
+   "discovery": 0.735
+  },
+  {
+   "title": "I Can't Dance",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.805,
+   "pref_med": 0.636,
+   "pref_lo": 0.445,
+   "pref_hi": 0.779,
+   "discovery": 0.512
+  },
+  {
+   "title": "Oh! This Is Love",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.966,
+   "pref_med": 0.826,
+   "pref_lo": 0.375,
+   "pref_hi": 0.972,
+   "discovery": 0.797
+  },
+  {
+   "title": "Ring Around the Rosie",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.802,
+   "pref_med": 0.586,
+   "pref_lo": 0.249,
+   "pref_hi": 0.869,
+   "discovery": 0.47
+  },
+  {
+   "title": "Miss My Baby",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.975,
+   "pref_med": 0.634,
+   "pref_lo": 0.23,
+   "pref_hi": 0.913,
+   "discovery": 0.618
+  },
+  {
+   "title": "Love Is Just a Memory",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.845,
+   "pref_med": 0.729,
+   "pref_lo": 0.498,
+   "pref_hi": 0.872,
+   "discovery": 0.616
+  },
+  {
+   "title": "Folktales",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.969,
+   "pref_med": 0.67,
+   "pref_lo": 0.498,
+   "pref_hi": 0.823,
+   "discovery": 0.649
+  },
+  {
+   "title": "masochist",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.997,
+   "pref_med": 0.738,
+   "pref_lo": 0.517,
+   "pref_hi": 0.847,
+   "discovery": 0.736
+  },
+  {
+   "title": "The Most Beautiful Painting in the World",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.985,
+   "pref_med": 0.654,
+   "pref_lo": 0.476,
+   "pref_hi": 0.795,
+   "discovery": 0.644
+  },
+  {
+   "title": "Waiting for You",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.867,
+   "pref_med": 0.676,
+   "pref_lo": 0.495,
+   "pref_hi": 0.857,
+   "discovery": 0.586
+  },
+  {
+   "title": "Fast Friends",
+   "artist": "Michael Seyer",
+   "genre": "Alternative",
+   "obscurity": 0.994,
+   "pref_med": 0.685,
+   "pref_lo": 0.377,
+   "pref_hi": 0.882,
+   "discovery": 0.681
+  },
+  {
+   "title": "Kilby Girl",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.034,
+   "pref_med": 0.615,
+   "pref_lo": 0.159,
+   "pref_hi": 0.869,
+   "discovery": 0.021
+  },
+  {
+   "title": "Pool House",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.146,
+   "pref_med": 0.522,
+   "pref_lo": 0.171,
+   "pref_hi": 0.802,
+   "discovery": 0.076
+  },
+  {
+   "title": "Maple Syrup",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.096,
+   "pref_med": 0.555,
+   "pref_lo": 0.296,
+   "pref_hi": 0.76,
+   "discovery": 0.053
+  },
+  {
+   "title": "Snowbank Blues",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.337,
+   "pref_med": 0.481,
+   "pref_lo": 0.29,
+   "pref_hi": 0.664,
+   "discovery": 0.162
+  },
+  {
+   "title": "Out of Tune",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.263,
+   "pref_med": 0.598,
+   "pref_lo": 0.083,
+   "pref_hi": 0.922,
+   "discovery": 0.157
+  },
+  {
+   "title": "Watch Your Mouth",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.232,
+   "pref_med": 0.561,
+   "pref_lo": 0.189,
+   "pref_hi": 0.829,
+   "discovery": 0.13
+  },
+  {
+   "title": "Olivia",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.39,
+   "pref_med": 0.558,
+   "pref_lo": 0.311,
+   "pref_hi": 0.751,
+   "discovery": 0.218
+  },
+  {
+   "title": "Growing/Dying",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.372,
+   "pref_med": 0.512,
+   "pref_lo": 0.349,
+   "pref_hi": 0.71,
+   "discovery": 0.19
+  },
+  {
+   "title": "Sinking Ship",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.362,
+   "pref_med": 0.595,
+   "pref_lo": 0.093,
+   "pref_hi": 0.919,
+   "discovery": 0.216
+  },
+  {
+   "title": "Just a Boy",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.334,
+   "pref_med": 0.472,
+   "pref_lo": 0.224,
+   "pref_hi": 0.726,
+   "discovery": 0.158
+  },
+  {
+   "title": "Words I Used",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.424,
+   "pref_med": 0.606,
+   "pref_lo": 0.062,
+   "pref_hi": 0.938,
+   "discovery": 0.257
+  },
+  {
+   "title": "Davy Crochet",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.341,
+   "pref_med": 0.579,
+   "pref_lo": 0.262,
+   "pref_hi": 0.811,
+   "discovery": 0.197
+  },
+  {
+   "title": "Intuition",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.415,
+   "pref_med": 0.542,
+   "pref_lo": 0.374,
+   "pref_hi": 0.729,
+   "discovery": 0.225
+  },
+  {
+   "title": "Dugout",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.303,
+   "pref_med": 0.617,
+   "pref_lo": 0.149,
+   "pref_hi": 0.891,
+   "discovery": 0.187
+  },
+  {
+   "title": "Elevator Days",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.464,
+   "pref_med": 0.531,
+   "pref_lo": 0.187,
+   "pref_hi": 0.794,
+   "discovery": 0.247
+  },
+  {
+   "title": "Still a Friend",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.437,
+   "pref_med": 0.544,
+   "pref_lo": 0.308,
+   "pref_hi": 0.732,
+   "discovery": 0.237
+  },
+  {
+   "title": "Viciously Lonely",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.625,
+   "pref_med": 0.632,
+   "pref_lo": 0.05,
+   "pref_hi": 0.96,
+   "discovery": 0.395
+  },
+  {
+   "title": "Know Your Name",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.536,
+   "pref_med": 0.615,
+   "pref_lo": 0.131,
+   "pref_hi": 0.888,
+   "discovery": 0.33
+  },
+  {
+   "title": "Slowing Down",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.514,
+   "pref_med": 0.687,
+   "pref_lo": 0.084,
+   "pref_hi": 0.953,
+   "discovery": 0.353
+  },
+  {
+   "title": "Close Your Eyes",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.56,
+   "pref_med": 0.589,
+   "pref_lo": 0.093,
+   "pref_hi": 0.91,
+   "discovery": 0.33
+  },
+  {
+   "title": "Heavy",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.461,
+   "pref_med": 0.696,
+   "pref_lo": 0.299,
+   "pref_hi": 0.869,
+   "discovery": 0.321
+  },
+  {
+   "title": "Morning in the Aves",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.52,
+   "pref_med": 0.498,
+   "pref_lo": 0.271,
+   "pref_hi": 0.72,
+   "discovery": 0.259
+  },
+  {
+   "title": "Follow the Sound",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.548,
+   "pref_med": 0.584,
+   "pref_lo": 0.268,
+   "pref_hi": 0.791,
+   "discovery": 0.32
+  },
+  {
+   "title": "Silhouette",
+   "artist": "The Backseat Lovers",
+   "genre": "Alternative",
+   "obscurity": 0.579,
+   "pref_med": 0.632,
+   "pref_lo": 0.019,
+   "pref_hi": 0.978,
+   "discovery": 0.366
+  },
+  {
+   "title": "Freakin' Out On the Interstate",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.102,
+   "pref_med": 0.578,
+   "pref_lo": 0.28,
+   "pref_hi": 0.785,
+   "discovery": 0.059
+  },
+  {
+   "title": "Small Talk",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.378,
+   "pref_med": 0.435,
+   "pref_lo": 0.249,
+   "pref_hi": 0.605,
+   "discovery": 0.164
+  },
+  {
+   "title": "June",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.43,
+   "pref_med": 0.399,
+   "pref_lo": 0.078,
+   "pref_hi": 0.81,
+   "discovery": 0.172
+  },
+  {
+   "title": "Fool's Gold",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.635,
+   "pref_med": 0.612,
+   "pref_lo": 0.09,
+   "pref_hi": 0.95,
+   "discovery": 0.389
+  },
+  {
+   "title": "Under My Skin",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.297,
+   "pref_med": 0.452,
+   "pref_lo": 0.178,
+   "pref_hi": 0.698,
+   "discovery": 0.134
+  },
+  {
+   "title": "Tomatoes",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.796,
+   "pref_med": 0.291,
+   "pref_lo": 0.068,
+   "pref_hi": 0.726,
+   "discovery": 0.232
+  },
+  {
+   "title": "Body",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.573,
+   "pref_med": 0.336,
+   "pref_lo": 0.155,
+   "pref_hi": 0.492,
+   "discovery": 0.193
+  },
+  {
+   "title": "It's Still Cool If You Don't",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.78,
+   "pref_med": 0.508,
+   "pref_lo": 0.243,
+   "pref_hi": 0.707,
+   "discovery": 0.396
+  },
+  {
+   "title": "I've Been Waiting",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.554,
+   "pref_med": 0.43,
+   "pref_lo": 0.268,
+   "pref_hi": 0.579,
+   "discovery": 0.238
+  },
+  {
+   "title": "Real Good Swimmer",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.83,
+   "pref_med": 0.279,
+   "pref_lo": 0.056,
+   "pref_hi": 0.732,
+   "discovery": 0.231
+  },
+  {
+   "title": "Hold On For Dear Life",
+   "artist": "Adam Melchor",
+   "genre": "Alternative",
+   "obscurity": 0.879,
+   "pref_med": 0.466,
+   "pref_lo": 0.252,
+   "pref_hi": 0.654,
+   "discovery": 0.409
+  },
+  {
+   "title": "Caroline",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.495,
+   "pref_med": 0.324,
+   "pref_lo": 0.131,
+   "pref_hi": 0.468,
+   "discovery": 0.16
+  },
+  {
+   "title": "Deep Sea Diver",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.882,
+   "pref_med": 0.368,
+   "pref_lo": 0.202,
+   "pref_hi": 0.526,
+   "discovery": 0.324
+  },
+  {
+   "title": "Rose",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.474,
+   "pref_med": 0.684,
+   "pref_lo": 0.009,
+   "pref_hi": 0.988,
+   "discovery": 0.324
+  },
+  {
+   "title": "I Told You So",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.127,
+   "pref_med": 0.419,
+   "pref_lo": 0.121,
+   "pref_hi": 0.707,
+   "discovery": 0.053
+  },
+  {
+   "title": "The Garden",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.892,
+   "pref_med": 0.389,
+   "pref_lo": 0.202,
+   "pref_hi": 0.639,
+   "discovery": 0.347
+  },
+  {
+   "title": "Steve's First Bruise",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.932,
+   "pref_med": 0.386,
+   "pref_lo": 0.05,
+   "pref_hi": 0.882,
+   "discovery": 0.36
+  },
+  {
+   "title": "Sinkin'",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.885,
+   "pref_med": 0.38,
+   "pref_lo": 0.19,
+   "pref_hi": 0.593,
+   "discovery": 0.337
+  },
+  {
+   "title": "Bottle Rocket",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.864,
+   "pref_med": 0.352,
+   "pref_lo": 0.153,
+   "pref_hi": 0.564,
+   "discovery": 0.304
+  },
+  {
+   "title": "Sunburn Fades",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.659,
+   "pref_med": 0.586,
+   "pref_lo": 0.181,
+   "pref_hi": 0.9,
+   "discovery": 0.386
+  },
+  {
+   "title": "Chaos Party",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.858,
+   "pref_med": 0.416,
+   "pref_lo": 0.208,
+   "pref_hi": 0.682,
+   "discovery": 0.357
+  },
+  {
+   "title": "Freeway",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.923,
+   "pref_med": 0.481,
+   "pref_lo": 0.19,
+   "pref_hi": 0.704,
+   "discovery": 0.444
+  },
+  {
+   "title": "Monday",
+   "artist": "Briston Maroney",
+   "genre": "Alternative",
+   "obscurity": 0.876,
+   "pref_med": 0.372,
+   "pref_lo": 0.177,
+   "pref_hi": 0.667,
+   "discovery": 0.326
+  },
+  {
+   "title": "Weight",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.183,
+   "pref_med": 0.357,
+   "pref_lo": 0.078,
+   "pref_hi": 0.969,
+   "discovery": 0.065
+  },
+  {
+   "title": "Soulfood",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.211,
+   "pref_med": 0.375,
+   "pref_lo": 0.09,
+   "pref_hi": 0.96,
+   "discovery": 0.079
+  },
+  {
+   "title": "Kingdom Hearts Key",
+   "artist": "JPEGMAFIA",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.328,
+   "pref_med": 0.702,
+   "pref_lo": 0.259,
+   "pref_hi": 0.95,
+   "discovery": 0.231
+  },
+  {
+   "title": "pg baby",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.375,
+   "pref_med": 0.385,
+   "pref_lo": 0.093,
+   "pref_hi": 0.916,
+   "discovery": 0.144
+  },
+  {
+   "title": "Campbell",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.774,
+   "pref_med": 0.349,
+   "pref_lo": 0.05,
+   "pref_hi": 0.997,
+   "discovery": 0.27
+  },
+  {
+   "title": "pray 4 me",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.582,
+   "pref_med": 0.653,
+   "pref_lo": 0.202,
+   "pref_hi": 0.932,
+   "discovery": 0.38
+  },
+  {
+   "title": "buzzerbeater / black christmas",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.628,
+   "pref_med": 0.558,
+   "pref_lo": 0.028,
+   "pref_hi": 0.975,
+   "discovery": 0.35
+  },
+  {
+   "title": "2daside",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.786,
+   "pref_med": 0.555,
+   "pref_lo": 0.168,
+   "pref_hi": 0.981,
+   "discovery": 0.436
+  },
+  {
+   "title": "morphine (da ways)",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.526,
+   "pref_med": 0.354,
+   "pref_lo": 0.071,
+   "pref_hi": 0.969,
+   "discovery": 0.186
+  },
+  {
+   "title": "TRUTH",
+   "artist": "AG Club",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.817,
+   "pref_med": 0.562,
+   "pref_lo": 0.199,
+   "pref_hi": 0.916,
+   "discovery": 0.46
+  },
+  {
+   "title": "what3ver",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.7,
+   "pref_med": 0.488,
+   "pref_lo": 0.15,
+   "pref_hi": 0.91,
+   "discovery": 0.341
+  },
+  {
+   "title": "brown sugar",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.585,
+   "pref_med": 0.559,
+   "pref_lo": 0.165,
+   "pref_hi": 0.91,
+   "discovery": 0.327
+  },
+  {
+   "title": "mini me",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.529,
+   "pref_med": 0.537,
+   "pref_lo": 0.14,
+   "pref_hi": 0.904,
+   "discovery": 0.284
+  },
+  {
+   "title": "glimpse of you",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.783,
+   "pref_med": 0.626,
+   "pref_lo": 0.093,
+   "pref_hi": 0.963,
+   "discovery": 0.49
+  },
+  {
+   "title": "new info",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.656,
+   "pref_med": 0.402,
+   "pref_lo": 0.093,
+   "pref_hi": 0.957,
+   "discovery": 0.264
+  },
+  {
+   "title": "captain",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.91,
+   "pref_med": 0.544,
+   "pref_lo": 0.152,
+   "pref_hi": 0.901,
+   "discovery": 0.495
+  },
+  {
+   "title": "black enuff",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.684,
+   "pref_med": 0.494,
+   "pref_lo": 0.143,
+   "pref_hi": 0.95,
+   "discovery": 0.338
+  },
+  {
+   "title": "f2g",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.833,
+   "pref_med": 0.525,
+   "pref_lo": 0.148,
+   "pref_hi": 0.947,
+   "discovery": 0.437
+  },
+  {
+   "title": "giftbag",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.963,
+   "pref_med": 0.534,
+   "pref_lo": 0.146,
+   "pref_hi": 0.926,
+   "discovery": 0.514
+  },
+  {
+   "title": "lone star",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.972,
+   "pref_med": 0.456,
+   "pref_lo": 0.136,
+   "pref_hi": 0.894,
+   "discovery": 0.444
+  },
+  {
+   "title": "time (a dream deferred)",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.715,
+   "pref_med": 0.414,
+   "pref_lo": 0.093,
+   "pref_hi": 0.988,
+   "discovery": 0.296
+  },
+  {
+   "title": "history",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.467,
+   "pref_med": 0.469,
+   "pref_lo": 0.127,
+   "pref_hi": 0.888,
+   "discovery": 0.219
+  },
+  {
+   "title": "automatic",
+   "artist": "redveil",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.706,
+   "pref_med": 0.478,
+   "pref_lo": 0.125,
+   "pref_hi": 0.888,
+   "discovery": 0.338
+  },
+  {
+   "title": "Sensitive",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.118,
+   "pref_med": 0.248,
+   "pref_lo": 0.081,
+   "pref_hi": 0.895,
+   "discovery": 0.029
+  },
+  {
+   "title": "Valentina",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.238,
+   "pref_med": 0.153,
+   "pref_lo": 0.034,
+   "pref_hi": 0.913,
+   "discovery": 0.036
+  },
+  {
+   "title": "Holding On",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.678,
+   "pref_med": 0.185,
+   "pref_lo": 0.059,
+   "pref_hi": 0.916,
+   "discovery": 0.126
+  },
+  {
+   "title": "Life Isn't Fair",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.693,
+   "pref_med": 0.22,
+   "pref_lo": 0.04,
+   "pref_hi": 0.907,
+   "discovery": 0.152
+  },
+  {
+   "title": "On My Grind",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.752,
+   "pref_med": 0.221,
+   "pref_lo": 0.083,
+   "pref_hi": 0.876,
+   "discovery": 0.166
+  },
+  {
+   "title": "Nothing Is Real",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.746,
+   "pref_med": 0.22,
+   "pref_lo": 0.1,
+   "pref_hi": 0.802,
+   "discovery": 0.164
+  },
+  {
+   "title": "Cookout",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.777,
+   "pref_med": 0.212,
+   "pref_lo": 0.071,
+   "pref_hi": 0.854,
+   "discovery": 0.165
+  },
+  {
+   "title": "Hard",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.663,
+   "pref_med": 0.134,
+   "pref_lo": 0.047,
+   "pref_hi": 0.826,
+   "discovery": 0.089
+  },
+  {
+   "title": "Do I Make You Nervous",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.458,
+   "pref_med": 0.173,
+   "pref_lo": 0.081,
+   "pref_hi": 0.726,
+   "discovery": 0.079
+  },
+  {
+   "title": "Move",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.443,
+   "pref_med": 0.215,
+   "pref_lo": 0.062,
+   "pref_hi": 0.846,
+   "discovery": 0.095
+  },
+  {
+   "title": "Meadows in Japan",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.737,
+   "pref_med": 0.227,
+   "pref_lo": 0.1,
+   "pref_hi": 0.845,
+   "discovery": 0.168
+  },
+  {
+   "title": "Believer",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.734,
+   "pref_med": 0.162,
+   "pref_lo": 0.047,
+   "pref_hi": 0.838,
+   "discovery": 0.119
+  },
+  {
+   "title": "All I Need",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.709,
+   "pref_med": 0.207,
+   "pref_lo": 0.05,
+   "pref_hi": 0.86,
+   "discovery": 0.147
+  },
+  {
+   "title": "I Try So Hard",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.598,
+   "pref_med": 0.192,
+   "pref_lo": 0.028,
+   "pref_hi": 0.876,
+   "discovery": 0.114
+  },
+  {
+   "title": "Smile",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.545,
+   "pref_med": 0.151,
+   "pref_lo": 0.062,
+   "pref_hi": 0.739,
+   "discovery": 0.082
+  },
+  {
+   "title": "Love Me",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.743,
+   "pref_med": 0.22,
+   "pref_lo": 0.081,
+   "pref_hi": 0.886,
+   "discovery": 0.163
+  },
+  {
+   "title": "Stop Calling The Police On Me",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.511,
+   "pref_med": 0.137,
+   "pref_lo": 0.044,
+   "pref_hi": 0.861,
+   "discovery": 0.07
+  },
+  {
+   "title": "Why Must Everyone Die",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.799,
+   "pref_med": 0.184,
+   "pref_lo": 0.053,
+   "pref_hi": 0.817,
+   "discovery": 0.147
+  },
+  {
+   "title": "Obsessed",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.808,
+   "pref_med": 0.195,
+   "pref_lo": 0.025,
+   "pref_hi": 0.823,
+   "discovery": 0.157
+  },
+  {
+   "title": "Kicking Cops",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.842,
+   "pref_med": 0.206,
+   "pref_lo": 0.078,
+   "pref_hi": 0.879,
+   "discovery": 0.173
+  },
+  {
+   "title": "Boo Thang",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.793,
+   "pref_med": 0.111,
+   "pref_lo": 0.031,
+   "pref_hi": 0.72,
+   "discovery": 0.088
+  },
+  {
+   "title": "Pressure",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.836,
+   "pref_med": 0.107,
+   "pref_lo": 0.006,
+   "pref_hi": 0.96,
+   "discovery": 0.09
+  },
+  {
+   "title": "Gimme A Chance",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.502,
+   "pref_med": 0.229,
+   "pref_lo": 0.069,
+   "pref_hi": 0.87,
+   "discovery": 0.115
+  },
+  {
+   "title": "Black Cloud",
+   "artist": "Dreamer Isioma",
+   "genre": "R&B/Soul",
+   "obscurity": 0.87,
+   "pref_med": 0.145,
+   "pref_lo": 0.019,
+   "pref_hi": 0.938,
+   "discovery": 0.126
+  },
+  {
+   "title": "I'm in Love",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.344,
+   "pref_med": 0.512,
+   "pref_lo": 0.312,
+   "pref_hi": 0.726,
+   "discovery": 0.176
+  },
+  {
+   "title": "Stella Brown",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.356,
+   "pref_med": 0.438,
+   "pref_lo": 0.249,
+   "pref_hi": 0.667,
+   "discovery": 0.156
+  },
+  {
+   "title": "Sweater Club",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.365,
+   "pref_med": 0.332,
+   "pref_lo": 0.115,
+   "pref_hi": 0.596,
+   "discovery": 0.121
+  },
+  {
+   "title": "Marigold",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.217,
+   "pref_med": 0.442,
+   "pref_lo": 0.168,
+   "pref_hi": 0.623,
+   "discovery": 0.096
+  },
+  {
+   "title": "Where We Go",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.749,
+   "pref_med": 0.556,
+   "pref_lo": 0.077,
+   "pref_hi": 0.941,
+   "discovery": 0.417
+  },
+  {
+   "title": "Daunt",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.567,
+   "pref_med": 0.469,
+   "pref_lo": 0.271,
+   "pref_hi": 0.651,
+   "discovery": 0.266
+  },
+  {
+   "title": "Shudder",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.724,
+   "pref_med": 0.349,
+   "pref_lo": 0.125,
+   "pref_hi": 0.679,
+   "discovery": 0.253
+  },
+  {
+   "title": "Sinking Plastic Suns",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.941,
+   "pref_med": 0.41,
+   "pref_lo": 0.24,
+   "pref_hi": 0.608,
+   "discovery": 0.386
+  },
+  {
+   "title": "The Promise",
+   "artist": "Samia",
+   "genre": "Alternative",
+   "obscurity": 0.718,
+   "pref_med": 0.411,
+   "pref_lo": 0.249,
+   "pref_hi": 0.564,
+   "discovery": 0.295
+  },
+  {
+   "title": "Someone to Hold You",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.957,
+   "pref_med": 0.388,
+   "pref_lo": 0.146,
+   "pref_hi": 0.732,
+   "discovery": 0.371
+  },
+  {
+   "title": "Breaking By",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.938,
+   "pref_med": 0.578,
+   "pref_lo": 0.162,
+   "pref_hi": 0.879,
+   "discovery": 0.542
+  },
+  {
+   "title": "I've Got Some Living To Do",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.991,
+   "pref_med": 0.489,
+   "pref_lo": 0.243,
+   "pref_hi": 0.704,
+   "discovery": 0.485
+  },
+  {
+   "title": "Angels",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.827,
+   "pref_med": 0.396,
+   "pref_lo": 0.131,
+   "pref_hi": 0.76,
+   "discovery": 0.327
+  },
+  {
+   "title": "Patagonia",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.935,
+   "pref_med": 0.511,
+   "pref_lo": 0.134,
+   "pref_hi": 0.832,
+   "discovery": 0.478
+  },
+  {
+   "title": "Overexposed",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.82,
+   "pref_med": 0.438,
+   "pref_lo": 0.23,
+   "pref_hi": 0.67,
+   "discovery": 0.359
+  },
+  {
+   "title": "From These Heights",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.789,
+   "pref_med": 0.427,
+   "pref_lo": 0.249,
+   "pref_hi": 0.611,
+   "discovery": 0.337
+  },
+  {
+   "title": "Delusions",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.988,
+   "pref_med": 0.688,
+   "pref_lo": 0.097,
+   "pref_hi": 0.969,
+   "discovery": 0.68
+  },
+  {
+   "title": "Hang On",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.697,
+   "pref_med": 0.449,
+   "pref_lo": 0.217,
+   "pref_hi": 0.702,
+   "discovery": 0.312
+  },
+  {
+   "title": "Decide",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.768,
+   "pref_med": 0.488,
+   "pref_lo": 0.23,
+   "pref_hi": 0.745,
+   "discovery": 0.374
+  },
+  {
+   "title": "A Piece Of Your Mind",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.929,
+   "pref_med": 0.517,
+   "pref_lo": 0.14,
+   "pref_hi": 0.87,
+   "discovery": 0.48
+  },
+  {
+   "title": "Jetfuel",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.913,
+   "pref_med": 0.548,
+   "pref_lo": 0.14,
+   "pref_hi": 0.876,
+   "discovery": 0.501
+  },
+  {
+   "title": "Lavender Love",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.895,
+   "pref_med": 0.667,
+   "pref_lo": 0.206,
+   "pref_hi": 0.957,
+   "discovery": 0.596
+  },
+  {
+   "title": "The Millennium Express",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.861,
+   "pref_med": 0.355,
+   "pref_lo": 0.196,
+   "pref_hi": 0.53,
+   "discovery": 0.306
+  },
+  {
+   "title": "The Fallback",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.901,
+   "pref_med": 0.399,
+   "pref_lo": 0.23,
+   "pref_hi": 0.53,
+   "discovery": 0.359
+  },
+  {
+   "title": "The Garden",
+   "artist": "Jelani Aryeh",
+   "genre": "Alternative",
+   "obscurity": 0.873,
+   "pref_med": 0.425,
+   "pref_lo": 0.205,
+   "pref_hi": 0.67,
+   "discovery": 0.371
+  },
+  {
+   "title": "Show Me How",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.009,
+   "pref_med": 0.67,
+   "pref_lo": 0.504,
+   "pref_hi": 0.82,
+   "discovery": 0.006
+  },
+  {
+   "title": "Come Back Down",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.124,
+   "pref_med": 0.732,
+   "pref_lo": 0.523,
+   "pref_hi": 0.897,
+   "discovery": 0.091
+  },
+  {
+   "title": "Sugar",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.142,
+   "pref_med": 0.64,
+   "pref_lo": 0.361,
+   "pref_hi": 0.845,
+   "discovery": 0.091
+  },
+  {
+   "title": "Billie Toppy",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.13,
+   "pref_med": 0.621,
+   "pref_lo": 0.408,
+   "pref_hi": 0.779,
+   "discovery": 0.081
+  },
+  {
+   "title": "Numb",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.087,
+   "pref_med": 0.678,
+   "pref_lo": 0.495,
+   "pref_hi": 0.822,
+   "discovery": 0.059
+  },
+  {
+   "title": "Lauren",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.059,
+   "pref_med": 0.759,
+   "pref_lo": 0.542,
+   "pref_hi": 0.885,
+   "discovery": 0.045
+  },
+  {
+   "title": "Tree Among Shrubs",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.093,
+   "pref_med": 0.614,
+   "pref_lo": 0.395,
+   "pref_hi": 0.81,
+   "discovery": 0.057
+  },
+  {
+   "title": "Tailwhip",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.065,
+   "pref_med": 0.729,
+   "pref_lo": 0.514,
+   "pref_hi": 0.854,
+   "discovery": 0.047
+  },
+  {
+   "title": "Heavenly Flow",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.099,
+   "pref_med": 0.78,
+   "pref_lo": 0.479,
+   "pref_hi": 0.956,
+   "discovery": 0.077
+  },
+  {
+   "title": "Serenade of Water",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.189,
+   "pref_med": 0.668,
+   "pref_lo": 0.436,
+   "pref_hi": 0.835,
+   "discovery": 0.126
+  },
+  {
+   "title": "Seven",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.068,
+   "pref_med": 0.766,
+   "pref_lo": 0.533,
+   "pref_hi": 0.903,
+   "discovery": 0.052
+  },
+  {
+   "title": "Husk",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.257,
+   "pref_med": 0.67,
+   "pref_lo": 0.511,
+   "pref_hi": 0.838,
+   "discovery": 0.172
+  },
+  {
+   "title": "Pines",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.195,
+   "pref_med": 0.637,
+   "pref_lo": 0.426,
+   "pref_hi": 0.757,
+   "discovery": 0.124
+  },
+  {
+   "title": "Sorbitol",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.056,
+   "pref_med": 0.625,
+   "pref_lo": 0.368,
+   "pref_hi": 0.823,
+   "discovery": 0.035
+  },
+  {
+   "title": "Ring of Past",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.198,
+   "pref_med": 0.631,
+   "pref_lo": 0.454,
+   "pref_hi": 0.81,
+   "discovery": 0.125
+  },
+  {
+   "title": "You Deserve This",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.115,
+   "pref_med": 0.751,
+   "pref_lo": 0.473,
+   "pref_hi": 0.919,
+   "discovery": 0.086
+  },
+  {
+   "title": "I Come With Mud",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.164,
+   "pref_med": 0.763,
+   "pref_lo": 0.205,
+   "pref_hi": 0.935,
+   "discovery": 0.125
+  },
+  {
+   "title": "Norton Commander (Album V)",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.223,
+   "pref_med": 0.648,
+   "pref_lo": 0.498,
+   "pref_hi": 0.798,
+   "discovery": 0.144
+  },
+  {
+   "title": "Oh Dove",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.316,
+   "pref_med": 0.707,
+   "pref_lo": 0.526,
+   "pref_hi": 0.847,
+   "discovery": 0.223
+  },
+  {
+   "title": "To Ease You",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.152,
+   "pref_med": 0.617,
+   "pref_lo": 0.42,
+   "pref_hi": 0.807,
+   "discovery": 0.094
+  },
+  {
+   "title": "Hard to Let Go",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.402,
+   "pref_med": 0.637,
+   "pref_lo": 0.308,
+   "pref_hi": 0.813,
+   "discovery": 0.256
+  },
+  {
+   "title": "All Night",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.282,
+   "pref_med": 0.656,
+   "pref_lo": 0.386,
+   "pref_hi": 0.851,
+   "discovery": 0.185
+  },
+  {
+   "title": "Dazed (feat. Gabrielle & Geoffroy)",
+   "artist": "Men I Trust",
+   "genre": "Alternative",
+   "obscurity": 0.272,
+   "pref_med": 0.551,
+   "pref_lo": 0.345,
+   "pref_hi": 0.713,
+   "discovery": 0.15
+  },
+  {
+   "title": "New Flesh",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.012,
+   "pref_med": 0.696,
+   "pref_lo": 0.371,
+   "pref_hi": 0.904,
+   "discovery": 0.009
+  },
+  {
+   "title": "Fear",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.031,
+   "pref_med": 0.751,
+   "pref_lo": 0.564,
+   "pref_hi": 0.869,
+   "discovery": 0.023
+  },
+  {
+   "title": "Televisions",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.019,
+   "pref_med": 0.766,
+   "pref_lo": 0.352,
+   "pref_hi": 0.95,
+   "discovery": 0.014
+  },
+  {
+   "title": "Symphonia IX",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.015,
+   "pref_med": 0.779,
+   "pref_lo": 0.514,
+   "pref_hi": 0.926,
+   "discovery": 0.012
+  },
+  {
+   "title": "New York City",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.167,
+   "pref_med": 0.762,
+   "pref_lo": 0.485,
+   "pref_hi": 0.863,
+   "discovery": 0.127
+  },
+  {
+   "title": "Blondie",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.05,
+   "pref_med": 0.759,
+   "pref_lo": 0.569,
+   "pref_hi": 0.904,
+   "discovery": 0.038
+  },
+  {
+   "title": "A Different Age",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.071,
+   "pref_med": 0.905,
+   "pref_lo": 0.016,
+   "pref_hi": 0.994,
+   "discovery": 0.064
+  },
+  {
+   "title": "My Blood",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.427,
+   "pref_med": 0.692,
+   "pref_lo": 0.289,
+   "pref_hi": 0.941,
+   "discovery": 0.295
+  },
+  {
+   "title": "Become the Warm Jets",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.046,
+   "pref_med": 0.927,
+   "pref_lo": 0.154,
+   "pref_hi": 0.984,
+   "discovery": 0.043
+  },
+  {
+   "title": "My Blueberry Life",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.409,
+   "pref_med": 0.777,
+   "pref_lo": 0.586,
+   "pref_hi": 0.901,
+   "discovery": 0.318
+  },
+  {
+   "title": "Amateur",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.539,
+   "pref_med": 0.85,
+   "pref_lo": 0.308,
+   "pref_hi": 0.947,
+   "discovery": 0.458
+  },
+  {
+   "title": "Days of Youth",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.632,
+   "pref_med": 0.805,
+   "pref_lo": 0.367,
+   "pref_hi": 0.972,
+   "discovery": 0.509
+  },
+  {
+   "title": "LOVE + POP",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.61,
+   "pref_med": 0.785,
+   "pref_lo": 0.155,
+   "pref_hi": 0.997,
+   "discovery": 0.479
+  },
+  {
+   "title": "Vagabond",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.721,
+   "pref_med": 0.794,
+   "pref_lo": 0.572,
+   "pref_hi": 0.898,
+   "discovery": 0.573
+  },
+  {
+   "title": "Altered States",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.703,
+   "pref_med": 0.777,
+   "pref_lo": 0.389,
+   "pref_hi": 0.941,
+   "discovery": 0.546
+  },
+  {
+   "title": "Blade Running",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.433,
+   "pref_med": 0.723,
+   "pref_lo": 0.501,
+   "pref_hi": 0.885,
+   "discovery": 0.313
+  },
+  {
+   "title": "My Nights Are More Beautiful Than Your Days",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.347,
+   "pref_med": 0.849,
+   "pref_lo": 0.046,
+   "pref_hi": 0.988,
+   "discovery": 0.294
+  },
+  {
+   "title": "Walk Away as the Door Slams",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.728,
+   "pref_med": 0.751,
+   "pref_lo": 0.159,
+   "pref_hi": 0.994,
+   "discovery": 0.546
+  },
+  {
+   "title": "Naked",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.65,
+   "pref_med": 0.822,
+   "pref_lo": 0.492,
+   "pref_hi": 0.947,
+   "discovery": 0.535
+  },
+  {
+   "title": "Rebecca",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.505,
+   "pref_med": 0.854,
+   "pref_lo": 0.473,
+   "pref_hi": 0.931,
+   "discovery": 0.431
+  },
+  {
+   "title": "Calypso",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.712,
+   "pref_med": 0.754,
+   "pref_lo": 0.547,
+   "pref_hi": 0.9,
+   "discovery": 0.537
+  },
+  {
+   "title": "You Broke My Heart",
+   "artist": "Current Joys",
+   "genre": "Alternative",
+   "obscurity": 0.207,
+   "pref_med": 0.966,
+   "pref_lo": 0.016,
+   "pref_hi": 1.0,
+   "discovery": 0.2
+  },
+  {
+   "title": "Potions",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "obscurity": 0.08,
+   "pref_med": 0.857,
+   "pref_lo": 0.669,
+   "pref_hi": 0.978,
+   "discovery": 0.069
+  },
+  {
+   "title": "Drag",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "obscurity": 0.353,
+   "pref_med": 0.885,
+   "pref_lo": 0.704,
+   "pref_hi": 0.984,
+   "discovery": 0.312
+  },
+  {
+   "title": "Something Here",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "obscurity": 0.523,
+   "pref_med": 0.935,
+   "pref_lo": 0.618,
+   "pref_hi": 0.991,
+   "discovery": 0.489
+  },
+  {
+   "title": "Hard to Read",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "obscurity": 0.851,
+   "pref_med": 0.805,
+   "pref_lo": 0.601,
+   "pref_hi": 0.947,
+   "discovery": 0.686
+  },
+  {
+   "title": "Where Do You Go",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "obscurity": 0.619,
+   "pref_med": 0.833,
+   "pref_lo": 0.641,
+   "pref_hi": 0.96,
+   "discovery": 0.516
+  },
+  {
+   "title": "Pastlife",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "obscurity": 0.814,
+   "pref_med": 0.861,
+   "pref_lo": 0.456,
+   "pref_hi": 0.991,
+   "discovery": 0.701
+  },
+  {
+   "title": "Gone",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "obscurity": 0.904,
+   "pref_med": 0.833,
+   "pref_lo": 0.57,
+   "pref_hi": 0.947,
+   "discovery": 0.753
+  },
+  {
+   "title": "Deadbeat Girl",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "obscurity": 0.947,
+   "pref_med": 0.925,
+   "pref_lo": 0.36,
+   "pref_hi": 0.981,
+   "discovery": 0.877
+  },
+  {
+   "title": "Carbon Monoxide (feat. Day Wave)",
+   "artist": "Krooked Kings",
+   "genre": "Alternative",
+   "obscurity": 0.96,
+   "pref_med": 0.249,
+   "pref_lo": 0.087,
+   "pref_hi": 0.433,
+   "discovery": 0.239
+  },
+  {
+   "title": "Total Zombie",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "obscurity": 0.653,
+   "pref_med": 0.891,
+   "pref_lo": 0.451,
+   "pref_hi": 0.963,
+   "discovery": 0.582
+  },
+  {
+   "title": "All Dressed Up",
+   "artist": "Hazel English",
+   "genre": "Alternative",
+   "obscurity": 0.74,
+   "pref_med": 0.763,
+   "pref_lo": 0.439,
+   "pref_hi": 0.929,
+   "discovery": 0.565
+  },
+  {
+   "title": "Breakdown",
+   "artist": "Sea Lemon",
+   "genre": "Alternative",
+   "obscurity": 0.92,
+   "pref_med": 0.318,
+   "pref_lo": 0.178,
+   "pref_hi": 0.483,
+   "discovery": 0.292
+  },
+  {
+   "title": "PDA",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "obscurity": 0.811,
+   "pref_med": 0.95,
+   "pref_lo": 0.258,
+   "pref_hi": 0.991,
+   "discovery": 0.771
+  },
+  {
+   "title": "Untitled",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "obscurity": 0.907,
+   "pref_med": 0.861,
+   "pref_lo": 0.628,
+   "pref_hi": 0.957,
+   "discovery": 0.781
+  },
+  {
+   "title": "Nothing at All",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "obscurity": 0.889,
+   "pref_med": 0.942,
+   "pref_lo": 0.439,
+   "pref_hi": 1.0,
+   "discovery": 0.837
+  },
+  {
+   "title": "On Your Side",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "obscurity": 0.613,
+   "pref_med": 0.883,
+   "pref_lo": 0.728,
+   "pref_hi": 0.988,
+   "discovery": 0.541
+  },
+  {
+   "title": "See You When The End's Near",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "obscurity": 0.759,
+   "pref_med": 0.869,
+   "pref_lo": 0.595,
+   "pref_hi": 0.963,
+   "discovery": 0.659
+  },
+  {
+   "title": "Home",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "obscurity": 0.771,
+   "pref_med": 0.913,
+   "pref_lo": 0.635,
+   "pref_hi": 0.982,
+   "discovery": 0.704
+  },
+  {
+   "title": "Starting Again",
+   "artist": "Day Wave",
+   "genre": "Alternative",
+   "obscurity": 0.681,
+   "pref_med": 0.872,
+   "pref_lo": 0.673,
+   "pref_hi": 0.975,
+   "discovery": 0.594
+  },
+  {
+   "title": "seasons",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.084,
+   "pref_med": 0.335,
+   "pref_lo": 0.146,
+   "pref_hi": 0.586,
+   "discovery": 0.028
+  },
+  {
+   "title": "nouvelle vague",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.291,
+   "pref_med": 0.252,
+   "pref_lo": 0.081,
+   "pref_hi": 0.393,
+   "discovery": 0.073
+  },
+  {
+   "title": "heaven and hell",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.254,
+   "pref_med": 0.491,
+   "pref_lo": 0.159,
+   "pref_hi": 0.791,
+   "discovery": 0.125
+  },
+  {
+   "title": "summer, night (feat. wave to earth)",
+   "artist": "Jeon Jin Hee",
+   "genre": "Alternative",
+   "obscurity": 0.446,
+   "pref_med": 0.221,
+   "pref_lo": 0.047,
+   "pref_hi": 0.602,
+   "discovery": 0.099
+  },
+  {
+   "title": "light",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.229,
+   "pref_med": 0.271,
+   "pref_lo": 0.109,
+   "pref_hi": 0.393,
+   "discovery": 0.062
+  },
+  {
+   "title": "homesick",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.133,
+   "pref_med": 0.33,
+   "pref_lo": 0.037,
+   "pref_hi": 0.832,
+   "discovery": 0.044
+  },
+  {
+   "title": "love.",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.043,
+   "pref_med": 0.379,
+   "pref_lo": 0.047,
+   "pref_hi": 0.847,
+   "discovery": 0.016
+  },
+  {
+   "title": "bad",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.155,
+   "pref_med": 0.26,
+   "pref_lo": 0.074,
+   "pref_hi": 0.576,
+   "discovery": 0.04
+  },
+  {
+   "title": "sunny days",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.204,
+   "pref_med": 0.327,
+   "pref_lo": 0.146,
+   "pref_hi": 0.555,
+   "discovery": 0.067
+  },
+  {
+   "title": "bonfire",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.269,
+   "pref_med": 0.235,
+   "pref_lo": 0.043,
+   "pref_hi": 0.673,
+   "discovery": 0.063
+  },
+  {
+   "title": "peach eyes",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.192,
+   "pref_med": 0.235,
+   "pref_lo": 0.072,
+   "pref_hi": 0.446,
+   "discovery": 0.045
+  },
+  {
+   "title": "gold",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.421,
+   "pref_med": 0.312,
+   "pref_lo": 0.056,
+   "pref_hi": 0.687,
+   "discovery": 0.131
+  },
+  {
+   "title": "dried flower",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.387,
+   "pref_med": 0.235,
+   "pref_lo": 0.096,
+   "pref_hi": 0.38,
+   "discovery": 0.091
+  },
+  {
+   "title": "pink",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.276,
+   "pref_med": 0.251,
+   "pref_lo": 0.065,
+   "pref_hi": 0.611,
+   "discovery": 0.069
+  },
+  {
+   "title": "so real",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.418,
+   "pref_med": 0.305,
+   "pref_lo": 0.084,
+   "pref_hi": 0.677,
+   "discovery": 0.128
+  },
+  {
+   "title": "holyland",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.288,
+   "pref_med": 0.335,
+   "pref_lo": 0.115,
+   "pref_hi": 0.604,
+   "discovery": 0.096
+  },
+  {
+   "title": "daisy.",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.384,
+   "pref_med": 0.293,
+   "pref_lo": 0.146,
+   "pref_hi": 0.427,
+   "discovery": 0.112
+  },
+  {
+   "title": "wave",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.471,
+   "pref_med": 0.35,
+   "pref_lo": 0.102,
+   "pref_hi": 0.692,
+   "discovery": 0.165
+  },
+  {
+   "title": "are you bored?",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.449,
+   "pref_med": 0.204,
+   "pref_lo": 0.006,
+   "pref_hi": 0.799,
+   "discovery": 0.092
+  },
+  {
+   "title": "akira",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.489,
+   "pref_med": 0.262,
+   "pref_lo": 0.072,
+   "pref_hi": 0.617,
+   "discovery": 0.128
+  },
+  {
+   "title": "sunburn",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.359,
+   "pref_med": 0.31,
+   "pref_lo": 0.165,
+   "pref_hi": 0.436,
+   "discovery": 0.111
+  },
+  {
+   "title": "play with earth!",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.483,
+   "pref_med": 0.326,
+   "pref_lo": 0.115,
+   "pref_hi": 0.58,
+   "discovery": 0.157
+  },
+  {
+   "title": "annie.",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.26,
+   "pref_med": 0.374,
+   "pref_lo": 0.075,
+   "pref_hi": 0.745,
+   "discovery": 0.097
+  },
+  {
+   "title": "surf.",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.452,
+   "pref_med": 0.324,
+   "pref_lo": 0.202,
+   "pref_hi": 0.458,
+   "discovery": 0.146
+  },
+  {
+   "title": "beck.",
+   "artist": "wave to earth",
+   "genre": "Alternative",
+   "obscurity": 0.44,
+   "pref_med": 0.291,
+   "pref_lo": 0.134,
+   "pref_hi": 0.499,
+   "discovery": 0.128
+  },
+  {
+   "title": "Won't Bite (feat. Smino)",
+   "artist": "Doja Cat",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.136,
+   "pref_med": 0.6,
+   "pref_lo": 0.178,
+   "pref_hi": 0.91,
+   "discovery": 0.082
+  },
+  {
+   "title": "Pro Freak",
+   "artist": "Smino",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.368,
+   "pref_med": 0.824,
+   "pref_lo": 0.224,
+   "pref_hi": 0.982,
+   "discovery": 0.304
+  },
+  {
+   "title": "Amphetamine",
+   "artist": "Smino",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.266,
+   "pref_med": 0.829,
+   "pref_lo": 0.006,
+   "pref_hi": 1.0,
+   "discovery": 0.221
+  },
+  {
+   "title": "Z4L",
+   "artist": "Smino",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.381,
+   "pref_med": 0.769,
+   "pref_lo": 0.264,
+   "pref_hi": 0.984,
+   "discovery": 0.293
+  },
+  {
+   "title": "Wild Irish Roses",
+   "artist": "Smino",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.176,
+   "pref_med": 0.766,
+   "pref_lo": 0.27,
+   "pref_hi": 0.975,
+   "discovery": 0.135
+  },
+  {
+   "title": "Mo' Liquor",
+   "artist": "Kari Faux",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.551,
+   "pref_med": 0.628,
+   "pref_lo": 0.226,
+   "pref_hi": 0.944,
+   "discovery": 0.346
+  },
+  {
+   "title": "Backstage Pass",
+   "artist": "Smino",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.248,
+   "pref_med": 0.645,
+   "pref_lo": 0.227,
+   "pref_hi": 0.923,
+   "discovery": 0.16
+  },
+  {
+   "title": "Shadow Man",
+   "artist": "Noname",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.319,
+   "pref_med": 0.897,
+   "pref_lo": 0.234,
+   "pref_hi": 0.994,
+   "discovery": 0.286
+  },
+  {
+   "title": "Hoe-nouns",
+   "artist": "Smino",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.576,
+   "pref_med": 0.804,
+   "pref_lo": 0.283,
+   "pref_hi": 0.985,
+   "discovery": 0.463
+  },
+  {
+   "title": "90 Proof",
+   "artist": "Smino",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.3,
+   "pref_med": 0.779,
+   "pref_lo": 0.274,
+   "pref_hi": 0.957,
+   "discovery": 0.234
+  },
+  {
+   "title": "Photosynthesis",
+   "artist": "Saba",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.226,
+   "pref_med": 0.849,
+   "pref_lo": 0.336,
+   "pref_hi": 0.988,
+   "discovery": 0.192
+  },
+  {
+   "title": "Scenic Drive (feat. Ari Lennox & Smino)",
+   "artist": "Khalid",
+   "genre": "R&B/Soul",
+   "obscurity": 0.18,
+   "pref_med": 0.174,
+   "pref_lo": 0.022,
+   "pref_hi": 0.838,
+   "discovery": 0.031
+  },
+  {
+   "title": "FYTB (FEAT. JOONY)",
+   "artist": "Brent Faiyaz",
+   "genre": "R&B/Soul",
+   "obscurity": 0.325,
+   "pref_med": 0.112,
+   "pref_lo": 0.003,
+   "pref_hi": 0.701,
+   "discovery": 0.036
+  },
+  {
+   "title": "Burning Rubber",
+   "artist": "Jordan Ward",
+   "genre": "R&B/Soul",
+   "obscurity": 0.762,
+   "pref_med": 0.031,
+   "pref_lo": 0.003,
+   "pref_hi": 0.73,
+   "discovery": 0.024
+  },
+  {
+   "title": "Jealousy",
+   "artist": "Jordan Ward",
+   "genre": "R&B/Soul",
+   "obscurity": 0.307,
+   "pref_med": 0.128,
+   "pref_lo": 0.016,
+   "pref_hi": 0.718,
+   "discovery": 0.039
+  },
+  {
+   "title": "Homebody",
+   "artist": "Jordan Ward",
+   "genre": "R&B/Soul",
+   "obscurity": 0.731,
+   "pref_med": 0.115,
+   "pref_lo": 0.009,
+   "pref_hi": 0.823,
+   "discovery": 0.084
+  },
+  {
+   "title": "IDC",
+   "artist": "Jordan Ward",
+   "genre": "R&B/Soul",
+   "obscurity": 0.396,
+   "pref_med": 0.112,
+   "pref_lo": 0.006,
+   "pref_hi": 0.881,
+   "discovery": 0.044
+  },
+  {
+   "title": "HIGHS LOWS",
+   "artist": "JOONY",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.916,
+   "pref_med": 0.34,
+   "pref_lo": 0.086,
+   "pref_hi": 0.944,
+   "discovery": 0.311
+  },
+  {
+   "title": "I KNOW (feat. Blxst)",
+   "artist": "JOONY",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.675,
+   "pref_med": 0.204,
+   "pref_lo": 0.028,
+   "pref_hi": 0.826,
+   "discovery": 0.138
+  },
+  {
+   "title": "One Track Minded",
+   "artist": "JOONY",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.954,
+   "pref_med": 0.329,
+   "pref_lo": 0.065,
+   "pref_hi": 0.925,
+   "discovery": 0.313
+  },
+  {
+   "title": "WEST",
+   "artist": "JOONY",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.944,
+   "pref_med": 0.227,
+   "pref_lo": 0.034,
+   "pref_hi": 0.95,
+   "discovery": 0.215
+  },
+  {
+   "title": "PIMPIN'",
+   "artist": "JOONY",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.854,
+   "pref_med": 0.355,
+   "pref_lo": 0.09,
+   "pref_hi": 0.869,
+   "discovery": 0.303
+  },
+  {
+   "title": "BABY JOON",
+   "artist": "JOONY",
+   "genre": "Hip-Hop/Rap",
+   "obscurity": 0.95,
+   "pref_med": 0.307,
+   "pref_lo": 0.068,
+   "pref_hi": 0.873,
+   "discovery": 0.292
+  },
+  {
+   "title": "Swim Between Trees",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.331,
+   "pref_med": 0.321,
+   "pref_lo": 0.177,
+   "pref_hi": 0.493,
+   "discovery": 0.106
+  },
+  {
+   "title": "August",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.186,
+   "pref_med": 0.355,
+   "pref_lo": 0.103,
+   "pref_hi": 0.676,
+   "discovery": 0.066
+  },
+  {
+   "title": "Space Cowboy",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.251,
+   "pref_med": 0.329,
+   "pref_lo": 0.124,
+   "pref_hi": 0.577,
+   "discovery": 0.082
+  },
+  {
+   "title": "Sad Disco",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.214,
+   "pref_med": 0.593,
+   "pref_lo": 0.164,
+   "pref_hi": 0.903,
+   "discovery": 0.127
+  },
+  {
+   "title": "Vanilla",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.393,
+   "pref_med": 0.414,
+   "pref_lo": 0.164,
+   "pref_hi": 0.645,
+   "discovery": 0.163
+  },
+  {
+   "title": "Chicago",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.235,
+   "pref_med": 0.371,
+   "pref_lo": 0.028,
+   "pref_hi": 0.882,
+   "discovery": 0.087
+  },
+  {
+   "title": "Glistening",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.35,
+   "pref_med": 0.368,
+   "pref_lo": 0.155,
+   "pref_hi": 0.612,
+   "discovery": 0.129
+  },
+  {
+   "title": "Nickel",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.563,
+   "pref_med": 0.357,
+   "pref_lo": 0.171,
+   "pref_hi": 0.53,
+   "discovery": 0.201
+  },
+  {
+   "title": "Poppies",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.607,
+   "pref_med": 0.315,
+   "pref_lo": 0.097,
+   "pref_hi": 0.636,
+   "discovery": 0.191
+  },
+  {
+   "title": "Six Below",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.604,
+   "pref_med": 0.358,
+   "pref_lo": 0.19,
+   "pref_hi": 0.483,
+   "discovery": 0.216
+  },
+  {
+   "title": "Burnout Days",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.542,
+   "pref_med": 0.428,
+   "pref_lo": 0.258,
+   "pref_hi": 0.561,
+   "discovery": 0.232
+  },
+  {
+   "title": "Moon Rocks",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.647,
+   "pref_med": 0.302,
+   "pref_lo": 0.115,
+   "pref_hi": 0.645,
+   "discovery": 0.196
+  },
+  {
+   "title": "Juno",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.492,
+   "pref_med": 0.299,
+   "pref_lo": 0.136,
+   "pref_hi": 0.527,
+   "discovery": 0.147
+  },
+  {
+   "title": "Hippies",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.486,
+   "pref_med": 0.522,
+   "pref_lo": 0.083,
+   "pref_hi": 0.926,
+   "discovery": 0.254
+  },
+  {
+   "title": "Rodeo Clown",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.517,
+   "pref_med": 0.393,
+   "pref_lo": 0.221,
+   "pref_hi": 0.576,
+   "discovery": 0.203
+  },
+  {
+   "title": "Inner Wave",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.622,
+   "pref_med": 0.349,
+   "pref_lo": 0.19,
+   "pref_hi": 0.492,
+   "discovery": 0.217
+  },
+  {
+   "title": "Churches",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.508,
+   "pref_med": 0.492,
+   "pref_lo": 0.146,
+   "pref_hi": 0.782,
+   "discovery": 0.25
+  },
+  {
+   "title": "Right?",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.638,
+   "pref_med": 0.47,
+   "pref_lo": 0.108,
+   "pref_hi": 0.891,
+   "discovery": 0.3
+  },
+  {
+   "title": "Sunlight",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.666,
+   "pref_med": 0.358,
+   "pref_lo": 0.174,
+   "pref_hi": 0.514,
+   "discovery": 0.238
+  },
+  {
+   "title": "Hypoxia",
+   "artist": "Flipturn",
+   "genre": "Alternative",
+   "obscurity": 0.601,
+   "pref_med": 0.425,
+   "pref_lo": 0.031,
+   "pref_hi": 0.913,
+   "discovery": 0.255
+  },
+  {
+   "title": "Alrighty Aphrodite",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.105,
+   "pref_med": 0.46,
+   "pref_lo": 0.299,
+   "pref_hi": 0.604,
+   "discovery": 0.048
+  },
+  {
+   "title": "Black Licorice",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.053,
+   "pref_med": 0.648,
+   "pref_lo": 0.208,
+   "pref_hi": 0.907,
+   "discovery": 0.034
+  },
+  {
+   "title": "Give Up Baby Go",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.285,
+   "pref_med": 0.525,
+   "pref_lo": 0.205,
+   "pref_hi": 0.791,
+   "discovery": 0.15
+  },
+  {
+   "title": "Being so Normal",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.279,
+   "pref_med": 0.455,
+   "pref_lo": 0.302,
+   "pref_hi": 0.604,
+   "discovery": 0.127
+  },
+  {
+   "title": "Shampoo Bottles",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.245,
+   "pref_med": 0.544,
+   "pref_lo": 0.155,
+   "pref_hi": 0.876,
+   "discovery": 0.133
+  },
+  {
+   "title": "Tommy's Party",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.139,
+   "pref_med": 0.788,
+   "pref_lo": 0.025,
+   "pref_hi": 0.988,
+   "discovery": 0.11
+  },
+  {
+   "title": "Drop the Guillotine",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.17,
+   "pref_med": 0.452,
+   "pref_lo": 0.261,
+   "pref_hi": 0.611,
+   "discovery": 0.077
+  },
+  {
+   "title": "Peach Pit",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.158,
+   "pref_med": 0.583,
+   "pref_lo": 0.112,
+   "pref_hi": 0.873,
+   "discovery": 0.092
+  },
+  {
+   "title": "Up Granville",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.533,
+   "pref_med": 0.547,
+   "pref_lo": 0.302,
+   "pref_hi": 0.676,
+   "discovery": 0.291
+  },
+  {
+   "title": "Private Presley",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.313,
+   "pref_med": 0.463,
+   "pref_lo": 0.022,
+   "pref_hi": 0.944,
+   "discovery": 0.145
+  },
+  {
+   "title": "Techno Show",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.322,
+   "pref_med": 0.503,
+   "pref_lo": 0.293,
+   "pref_hi": 0.623,
+   "discovery": 0.162
+  },
+  {
+   "title": "Hot Knifer",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.406,
+   "pref_med": 0.489,
+   "pref_lo": 0.212,
+   "pref_hi": 0.704,
+   "discovery": 0.198
+  },
+  {
+   "title": "Seventeen",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.399,
+   "pref_med": 0.617,
+   "pref_lo": 0.455,
+   "pref_hi": 0.801,
+   "discovery": 0.246
+  },
+  {
+   "title": "Did You Love Somebody",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.57,
+   "pref_med": 0.713,
+   "pref_lo": 0.336,
+   "pref_hi": 0.866,
+   "discovery": 0.406
+  },
+  {
+   "title": "Puppy Grin",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.616,
+   "pref_med": 0.464,
+   "pref_lo": 0.202,
+   "pref_hi": 0.726,
+   "discovery": 0.286
+  },
+  {
+   "title": "Sweet FA",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.498,
+   "pref_med": 0.464,
+   "pref_lo": 0.305,
+   "pref_hi": 0.595,
+   "discovery": 0.231
+  },
+  {
+   "title": "You and Your Friends",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.594,
+   "pref_med": 0.595,
+   "pref_lo": 0.33,
+   "pref_hi": 0.751,
+   "discovery": 0.354
+  },
+  {
+   "title": "Vickie",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.591,
+   "pref_med": 0.53,
+   "pref_lo": 0.317,
+   "pref_hi": 0.645,
+   "discovery": 0.313
+  },
+  {
+   "title": "Psychics in LA",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.477,
+   "pref_med": 0.548,
+   "pref_lo": 0.395,
+   "pref_hi": 0.72,
+   "discovery": 0.261
+  },
+  {
+   "title": "Figure 8",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.48,
+   "pref_med": 0.477,
+   "pref_lo": 0.317,
+   "pref_hi": 0.592,
+   "discovery": 0.229
+  },
+  {
+   "title": "Thursday",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.644,
+   "pref_med": 0.771,
+   "pref_lo": 0.295,
+   "pref_hi": 0.972,
+   "discovery": 0.497
+  },
+  {
+   "title": "Denny's Garage",
+   "artist": "Peach Pit",
+   "genre": "Alternative",
+   "obscurity": 0.755,
+   "pref_med": 0.511,
+   "pref_lo": 0.37,
+   "pref_hi": 0.642,
+   "discovery": 0.386
+  }
+ ],
+ "caveats": [
+  "Preference scores are cross-validated percentiles vs. weak negatives, NOT calibrated P(love).",
+  "Bootstrap bands are ranking-stability intervals over artist resamples, not confidence intervals.",
+  "Candidate pool is authored by 16 taste-adjacent artist searches; gems outside those neighborhoods are invisible."
+ ]
+}

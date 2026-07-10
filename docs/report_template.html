@@ -1,0 +1,379 @@
+<title>Crate — a discovery engine for undervalued songs</title>
+<style>
+  :root {
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e;
+    --muted: #898781; --grid: #e1e0d9; --baseline: #c3c2b7;
+    --border: rgba(11,11,11,.10); --accent: #4a3aa7;
+    --s1: #2a78d6; --s2: #1baf7a; --bad: #d03b3b; --warn: #c98500; --good: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+      --muted: #898781; --grid: #2c2c2a; --baseline: #383835;
+      --border: rgba(255,255,255,.10); --accent: #9085e9;
+      --s1: #3987e5; --s2: #199e70; --bad: #e66767; --warn: #eda100; --good: #0ca30c;
+    }
+  }
+  :root[data-theme="light"] {
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e;
+    --muted: #898781; --grid: #e1e0d9; --baseline: #c3c2b7;
+    --border: rgba(11,11,11,.10); --accent: #4a3aa7;
+    --s1: #2a78d6; --s2: #1baf7a; --bad: #d03b3b; --warn: #c98500; --good: #006300;
+  }
+  :root[data-theme="dark"] {
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+    --muted: #898781; --grid: #2c2c2a; --baseline: #383835;
+    --border: rgba(255,255,255,.10); --accent: #9085e9;
+    --s1: #3987e5; --s2: #199e70; --bad: #e66767; --warn: #eda100; --good: #0ca30c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 52px 24px 80px; }
+  .narrow { max-width: 720px; margin: 0 auto; }
+  .eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0 0 14px; }
+  h1 { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-size: clamp(32px, 5.6vw, 46px); line-height: 1.12; text-wrap: balance; margin: 0 0 14px; font-weight: 600; }
+  h2 { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-size: 24px; margin: 56px 0 6px; font-weight: 600; text-wrap: balance; }
+  .standfirst { font-size: 18px; color: var(--ink-2); margin: 0 0 8px; max-width: 62ch; }
+  .byline { font-size: 13px; color: var(--muted); margin: 0 0 34px; }
+  .kicker { font-size: 13px; color: var(--muted); margin: 0 0 18px; }
+  p { max-width: 65ch; margin: 0 0 16px; }
+  code { font: 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
+
+  /* ---------- app console ---------- */
+  .console { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin: 10px 0 8px; }
+  .statstrip { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 12.5px; color: var(--muted); margin: 0 0 18px; }
+  .statstrip b { color: var(--ink); font-weight: 650; font-variant-numeric: tabular-nums; }
+  .controls { display: flex; flex-wrap: wrap; gap: 14px 26px; align-items: flex-end; padding: 14px 0 18px; border-bottom: 1px solid var(--grid); margin-bottom: 18px; }
+  .ctl label { display: block; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 7px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { font-size: 13px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--ink-2); cursor: pointer; font-family: inherit; }
+  .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--page); font-weight: 600; }
+  .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .dial { display: flex; align-items: center; gap: 10px; }
+  .dial input[type=range] { width: 170px; accent-color: var(--accent); }
+  .dial output { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--ink-2); min-width: 78px; }
+  .applayout { display: grid; grid-template-columns: 1.25fr 1fr; gap: 22px; }
+  @media (max-width: 760px) { .applayout { grid-template-columns: 1fr; } }
+  .panel-title { font-size: 13.5px; font-weight: 650; margin: 0 0 2px; }
+  .panel-sub { font-size: 12px; color: var(--muted); margin: 0 0 10px; }
+  .legend { display: flex; gap: 14px; font-size: 12px; color: var(--ink-2); margin: 8px 0 0; flex-wrap: wrap; }
+  .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+  .legend .dia { border-radius: 1px; transform: rotate(45deg); }
+  #frontier { width: 100%; height: auto; display: block; }
+  #frontier .pt { cursor: pointer; }
+  #frontier .pt:focus-visible { outline: none; stroke: var(--accent); stroke-width: 2; }
+  .ranklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+  .ranklist li { display: grid; grid-template-columns: 24px 1fr auto; gap: 10px; align-items: center; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--page); cursor: pointer; }
+  .ranklist li:hover, .ranklist li.hl { border-color: var(--accent); }
+  .ranklist .rk { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+  .ranklist .t { font-size: 13.5px; font-weight: 600; line-height: 1.3; }
+  .ranklist .a { font-size: 12px; color: var(--ink-2); }
+  .ranklist .band { width: 74px; }
+  .ranklist .band .lbl { font-size: 10.5px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+  .ranklist .band .rail { height: 4px; border-radius: 2px; background: var(--grid); position: relative; margin-top: 3px; }
+  .ranklist .band .rail i { position: absolute; top: 0; height: 100%; border-radius: 2px; background: var(--s1); opacity: .45; }
+  .ranklist .band .rail b { position: absolute; top: -2px; width: 8px; height: 8px; border-radius: 50%; background: var(--s1); transform: translateX(-4px); }
+  .modenote { font-size: 12px; color: var(--muted); margin-top: 12px; max-width: 44ch; }
+  #tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--page); font-size: 12.5px; padding: 7px 10px; border-radius: 6px; opacity: 0; transition: opacity .12s; max-width: 280px; z-index: 10; line-height: 1.45; }
+  @media (prefers-reduced-motion: reduce) { #tip, .ranklist li { transition: none; } }
+
+  /* ---------- report styles (part I/II) ---------- */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 28px 0 8px; }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; }
+  .tile .v { font-size: 30px; font-weight: 650; line-height: 1.1; }
+  .tile .l { font-size: 12px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-top: 6px; }
+  .tile .n { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; }
+  .story { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 26px 0 10px; }
+  .act { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px; }
+  .act .tag { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+  .act .auc { font-size: 44px; font-weight: 700; line-height: 1.1; margin: 8px 0 2px; font-variant-numeric: tabular-nums; }
+  .act .sub { font-size: 13px; color: var(--ink-2); }
+  .act .meter { height: 6px; border-radius: 3px; background: var(--grid); margin-top: 14px; overflow: hidden; }
+  .act .meter i { display: block; height: 100%; border-radius: 3px; }
+  .act.broken .tag { color: var(--bad); } .act.broken .meter i { background: var(--bad); }
+  .act.leaky  .tag { color: var(--warn); } .act.leaky  .meter i { background: var(--warn); }
+  .act.honest .tag { color: var(--good); } .act.honest .meter i { background: var(--good); }
+  .story-note { font-size: 13px; color: var(--muted); margin: 0 0 16px; }
+  .callout { border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 24px 0; font-size: 15px; }
+  .callout .t { font-weight: 650; }
+  ul.caveats { padding-left: 20px; max-width: 65ch; } ul.caveats li { margin-bottom: 10px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  .tablewrap { overflow-x: auto; margin: 18px 0; }
+  th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--baseline); }
+  td { padding: 8px 12px 8px 0; border-bottom: 1px solid var(--grid); }
+  td.num { font-variant-numeric: tabular-nums; }
+  footer { margin-top: 64px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--grid); padding-top: 18px; }
+  @media (max-width: 640px) { .story { grid-template-columns: 1fr; } }
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Crate · a discovery engine prototype</p>
+  <h1>Songs the algorithm underrates, ranked for one listener</h1>
+  <p class="standfirst">Spotify's recommender optimizes for what you'll press play on next.
+  Crate optimizes for what you'll <em>love that almost nobody plays</em> — a taste model with
+  uncertainty discipline, pointed at 321 low-popularity tracks it has never seen.</p>
+  <p class="byline">Built on my real listening data · model + method reviewed adversarially by a second model (GPT-5 Codex) · July 2026</p>
+
+  <div class="console">
+    <div class="statstrip">
+      <span><b id="st-n">—</b> candidate tracks</span>
+      <span><b id="st-a">—</b> artists mined</span>
+      <span>preference model AUC <b>0.606</b> (leave-artist-out)</span>
+      <span>lift@20% <b>1.3×</b></span>
+      <span>bootstrap fits <b>300</b></span>
+    </div>
+    <div class="controls">
+      <div class="ctl">
+        <label for="gamma">Exploration dial — how hard to reward obscurity (γ)</label>
+        <div class="dial">
+          <input type="range" id="gamma" min="0" max="2.5" step="0.1" value="1">
+          <output id="gamma-out" for="gamma">γ = 1.0</output>
+        </div>
+      </div>
+      <div class="ctl">
+        <label>Risk appetite</label>
+        <div class="chips" id="risk" role="group" aria-label="Risk appetite">
+          <button class="chip" data-v="pref_lo" aria-pressed="false">Safe bets</button>
+          <button class="chip" data-v="pref_med" aria-pressed="true">Balanced</button>
+          <button class="chip" data-v="pref_hi" aria-pressed="false">Moonshots</button>
+        </div>
+      </div>
+      <div class="ctl">
+        <label>Genre</label>
+        <div class="chips" id="genres" role="group" aria-label="Genre filter">
+          <button class="chip" data-v="all" aria-pressed="true">All</button>
+          <button class="chip" data-v="Alternative" aria-pressed="false">Alternative</button>
+          <button class="chip" data-v="Hip-Hop/Rap" aria-pressed="false">Hip-Hop/Rap</button>
+          <button class="chip" data-v="R&amp;B/Soul" aria-pressed="false">R&amp;B/Soul</button>
+        </div>
+      </div>
+    </div>
+    <div class="applayout">
+      <div>
+        <p class="panel-title">The discovery frontier</p>
+        <p class="panel-sub">Every dot is a song the model has never seen. Right = more obscure, up = more you. The prize is the upper-right.</p>
+        <svg id="frontier" viewBox="0 0 460 360" role="img" aria-label="Scatter plot of candidate songs: obscurity versus predicted preference, with the current top picks highlighted"></svg>
+        <div class="legend">
+          <span><i style="background:var(--s1)"></i>Current top-12 pick</span>
+          <span><i class="dia" style="background:var(--s2)"></i>Moonshot pick (wide uncertainty)</span>
+          <span><i style="background:var(--baseline)"></i>Unselected candidate</span>
+        </div>
+      </div>
+      <div>
+        <p class="panel-title">Your crate — top 12 right now</p>
+        <p class="panel-sub" id="listmode">Ranked by median preference × obscurity<sup>γ</sup>, max 2 per artist</p>
+        <ol class="ranklist" id="ranklist"></ol>
+        <p class="modenote">Drag the dial toward 0 and Crate behaves like a normal recommender; push past 1.5 and it digs deep into the tail. Bands under each score show ranking stability across 300 artist-bootstrap refits.</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="kicker" style="margin-top:14px">Why this could be a product: the same engine, per user, is a "deep cuts made of your taste"
+  subscription surface for listeners — and read the other way, an A&amp;R scouting screen: undervalued tracks with
+  high predicted affinity for a taste cluster are exactly the songs labels want to find before the crowd does.</p>
+
+  <div class="narrow">
+
+  <h2>Part I — the taste model, and the three traps</h2>
+  <p class="kicker">148 tracks from my library · positives = saved songs · weak negatives = unsaved Made-For-You mix tracks (a PU-learning setup)</p>
+
+  <div class="story">
+    <div class="act broken">
+      <span class="tag">v1 · Broken</span>
+      <div class="auc">0.28</div>
+      <div class="sub">100+ tracks had no artist or genre; unknown artists collapsed into one giant CV group. Below coin-flip means the pipeline is broken, not the taste.</div>
+      <div class="meter"><i style="width:28%"></i></div>
+    </div>
+    <div class="act leaky">
+      <span class="tag">v2 · Leaky</span>
+      <div class="auc">0.95</div>
+      <div class="sub">Looked brilliant. Was fraud: a source-count feature encoded the label's origin, and artist liked-rates were computed across CV folds.</div>
+      <div class="meter"><i style="width:95%"></i></div>
+    </div>
+    <div class="act honest">
+      <span class="tag">v3 · Honest</span>
+      <div class="auc">0.615</div>
+      <div class="sub">Content features only, whole artists held out. The model must generalize taste to artists it has never seen — and still beats chance.</div>
+      <div class="meter"><i style="width:61.5%"></i></div>
+    </div>
+  </div>
+  <p class="story-note">On 148 rows, an AUC of 0.95 is an accusation, not a result.</p>
+
+  <div class="callout">
+    <span class="t">Favorite failure mode.</span> A song literally titled <em>"A COLD PLAY"</em> ranked
+    fourth in Part I — the char-ngram TF-IDF learned that strings spelled like <em>coldplay</em> are things
+    I like, and it isn't even wrong about why. Title text is a real signal and a real trap.
+  </div>
+
+  <h2>Part II — the discovery engine</h2>
+  <p>Finding <em>undervalued</em> songs adds two problems on top of taste: the model must score
+  tracks from a different distribution than it trained on, and "you'll love this" claims need
+  uncertainty attached. The design — stress-tested by a second model (GPT-5 Codex), which
+  rejected fancier options (Elkan–Noto calibration, conformal sets, KDE novelty) as
+  unstable at n=148:</p>
+
+  <div class="tablewrap">
+  <table>
+    <tr><th>Component</th><th>Choice</th><th>Why not fancier</th></tr>
+    <tr><td>Preference</td><td>Regularized LR, cross-validated <em>percentile</em> score</td><td>Elkan–Noto "calibrated P(love)" needs labeling assumptions this data violates</td></tr>
+    <tr><td>Uncertainty</td><td>300 grouped-artist bootstrap refits → stability bands</td><td>Conformal sets would burn half of 148 rows on calibration</td></tr>
+    <tr><td>Obscurity</td><td>Deezer popularity rank → log-percentile (never a model feature)</td><td>Popularity inside the model would launder the bias we're fighting</td></tr>
+    <tr><td>Ranking</td><td>preference × obscurity<sup>γ</sup>, per-artist cap of 2</td><td>UCB bonus rewards being weird, not being good, in a one-shot setting</td></tr>
+  </table>
+  </div>
+
+  <p>Honesty checks, all leave-one-artist-out: combined features (AUC 0.606) beat metadata-only
+  (0.544) and text-only (0.550); positive lift of 1.3× in the top quintile; and the top-15 gem list
+  was re-derived under γ ∈ {0.5, 1, 2} — three-way Jaccard overlap 0.43, reported rather than hidden,
+  which is why the γ dial is exposed in the UI instead of baked in.</p>
+
+  <div class="tablewrap">
+  <table>
+    <caption class="kicker" style="text-align:left; caption-side:top; padding:8px 0;">Feature ablations, leave-one-artist-out CV (library, n=148)</caption>
+    <tr><th>Features</th><th>ROC-AUC</th><th>Avg precision</th><th>Lift@20%</th></tr>
+    <tr><td>Metadata only (genre, era, duration, explicit)</td><td class="num">0.544</td><td class="num">0.446</td><td class="num">1.1×</td></tr>
+    <tr><td>Text only (char-ngram TF-IDF, title+artist)</td><td class="num">0.550</td><td class="num">0.394</td><td class="num">1.1×</td></tr>
+    <tr><td>Combined</td><td class="num"><strong>0.606</strong></td><td class="num"><strong>0.452</strong></td><td class="num"><strong>1.3×</strong></td></tr>
+  </table>
+  </div>
+
+  <h2>What I'd tell a reviewer</h2>
+  <ul class="caveats">
+    <li><strong>Scores are percentiles, not probabilities.</strong> With 51 positives and behaviorally-selected weak negatives, calibrated "P(love)" claims would be false precision. Bands are ranking stability, not confidence intervals.</li>
+    <li><strong>The pool is authored.</strong> 321 candidates come from 16 taste-adjacent artist searches on Deezer; gems outside those neighborhoods are invisible. Fixing that means candidate generation from co-listening graphs — the natural v3.</li>
+    <li><strong>Era is imputed at artist level for candidates</strong> (Deezer search returns no dates); the library uses real years.</li>
+    <li><strong>The next label is a listen.</strong> The exploration dial is round one of an active-learning loop: every play/skip on a crate pick is a true label that retrains the engine — that closed loop is the actual product.</li>
+  </ul>
+
+  <footer>
+    Repo: <code>spotify-taste-model</code> — data pipeline, both models, this page ·
+    built with Claude Code, adversarial method review by GPT-5 Codex · my own listening data, July 2026.
+  </footer>
+  </div>
+</div>
+<div id="tip" role="tooltip"></div>
+
+<script>
+const GEMS = /*__GEMS_DATA__*/;
+
+const frontier = GEMS.frontier;
+const state = { gamma: 1.0, risk: "pref_med", genre: "all", hl: null };
+document.getElementById("st-n").textContent = frontier.length;
+document.getElementById("st-a").textContent = new Set(frontier.map(d => d.artist.split(",")[0].trim())).size;
+
+function primary(a) { return a.split(",")[0].trim().toLowerCase(); }
+function pool() {
+  return state.genre === "all" ? frontier : frontier.filter(d => d.genre === state.genre);
+}
+function scored() {
+  const g = state.gamma, key = state.risk;
+  return pool()
+    .map(d => ({ ...d, score: d[key] * Math.pow(d.obscurity, g) }))
+    .sort((x, y) => y.score - x.score);
+}
+function top12() {
+  const out = [], counts = {};
+  for (const d of scored()) {
+    const a = primary(d.artist);
+    if ((counts[a] || 0) >= 2) continue;
+    counts[a] = (counts[a] || 0) + 1;
+    out.push(d);
+    if (out.length === 12) break;
+  }
+  return out;
+}
+const isMoon = d => (d.pref_hi - d.pref_lo) > 0.55;
+
+const svg = document.getElementById("frontier");
+const tip = document.getElementById("tip");
+const M = { l: 42, r: 10, t: 12, b: 40 }, W = 460, H = 360;
+const sx = v => M.l + v * (W - M.l - M.r);
+const sy = v => H - M.b - v * (H - M.t - M.b);
+
+function tipShow(d, e) {
+  tip.innerHTML = `<b>${d.title}</b><br>${d.artist} · ${d.genre}<br>preference ${Math.round(d.pref_med*100)}th pct [${Math.round(d.pref_lo*100)}–${Math.round(d.pref_hi*100)}] · obscurity ${Math.round(d.obscurity*100)}%`;
+  tip.style.opacity = 1;
+  const x = (e?.clientX ?? 100) + 14, y = (e?.clientY ?? 100) - 10;
+  tip.style.left = Math.min(x, innerWidth - tip.offsetWidth - 8) + "px";
+  tip.style.top = Math.max(8, y - tip.offsetHeight) + "px";
+}
+function tipHide() { tip.style.opacity = 0; }
+
+function draw() {
+  const picks = top12();
+  const pickMap = new Map(picks.map(d => [d.title + d.artist, d.score]));
+  const cs = getComputedStyle(document.documentElement);
+  const C = { s1: cs.getPropertyValue("--s1"), s2: cs.getPropertyValue("--s2"),
+              base: cs.getPropertyValue("--baseline"), grid: cs.getPropertyValue("--grid"),
+              muted: cs.getPropertyValue("--muted"), accent: cs.getPropertyValue("--accent") };
+  let el = `
+    <defs><linearGradient id="prize" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="55%" stop-color="${C.accent}" stop-opacity="0"/>
+      <stop offset="100%" stop-color="${C.accent}" stop-opacity="0.10"/>
+    </linearGradient></defs>
+    <rect x="${M.l}" y="${M.t}" width="${W-M.l-M.r}" height="${H-M.t-M.b}" fill="url(#prize)"/>
+    <line x1="${M.l}" y1="${sy(0)}" x2="${W-M.r}" y2="${sy(0)}" stroke="${C.base}"/>
+    <line x1="${M.l}" y1="${M.t}" x2="${M.l}" y2="${sy(0)}" stroke="${C.base}"/>
+    <line x1="${M.l}" y1="${sy(0.5)}" x2="${W-M.r}" y2="${sy(0.5)}" stroke="${C.grid}"/>
+    <text x="${M.l-6}" y="${sy(0.5)+4}" text-anchor="end" font-size="10" fill="${C.muted}">50th</text>
+    <text x="${M.l-6}" y="${sy(1)+4}" text-anchor="end" font-size="10" fill="${C.muted}">99th</text>
+    <text x="${sx(0)}" y="${H-16}" font-size="10" fill="${C.muted}">mainstream</text>
+    <text x="${sx(1)}" y="${H-16}" text-anchor="end" font-size="10" fill="${C.muted}">deep obscurity →</text>
+    <text x="14" y="${M.t+10}" font-size="10" fill="${C.muted}" transform="rotate(-90 14 ${M.t+10})" text-anchor="end">predicted preference →</text>`;
+  for (const d of pool()) {
+    const picked = pickMap.has(d.title + d.artist);
+    const moon = picked && isMoon(d);
+    const x = sx(d.obscurity), y = sy(d.pref_med);
+    const r = picked ? 3 + 4 * pickMap.get(d.title + d.artist) / (picks[0].score || 1) : 2.6;
+    const fill = picked ? (moon ? C.s2 : C.s1) : C.base;
+    const op = picked ? 0.95 : 0.45;
+    const bar = picked ? `<line x1="${x}" y1="${sy(d.pref_lo)}" x2="${x}" y2="${sy(d.pref_hi)}" stroke="${fill}" stroke-opacity="0.4" stroke-width="1.4"/>` : "";
+    const shape = moon
+      ? `<rect x="${x-r}" y="${y-r}" width="${2*r}" height="${2*r}" transform="rotate(45 ${x} ${y})" fill="${fill}" fill-opacity="${op}"/>`
+      : `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" fill-opacity="${op}"/>`;
+    el += `<g class="pt" tabindex="0" data-k="${(d.title + d.artist).replace(/"/g, "&quot;")}">${bar}${shape}</g>`;
+  }
+  svg.innerHTML = el;
+  svg.querySelectorAll(".pt").forEach((g, i) => {
+    const items = pool(); const d = items[i];
+    g.addEventListener("mousemove", e => tipShow(d, e));
+    g.addEventListener("focus", e => tipShow(d, e));
+    g.addEventListener("mouseleave", tipHide);
+    g.addEventListener("blur", tipHide);
+  });
+
+  const list = document.getElementById("ranklist");
+  list.innerHTML = picks.map((d, i) => `
+    <li data-k="${(d.title + d.artist).replace(/"/g, "&quot;")}" tabindex="0">
+      <span class="rk">${i + 1}</span>
+      <span><span class="t">${d.title}</span><br><span class="a">${d.artist} · ${d.genre}${isMoon(d) ? " · moonshot" : ""}</span></span>
+      <span class="band"><span class="lbl">${Math.round(d.pref_med * 100)}th pct</span>
+        <span class="rail"><i style="left:${d.pref_lo * 100}%; width:${(d.pref_hi - d.pref_lo) * 100}%"></i><b style="left:${d.pref_med * 100}%"></b></span>
+      </span>
+    </li>`).join("");
+  list.querySelectorAll("li").forEach((li, i) => {
+    const d = picks[i];
+    li.addEventListener("mousemove", e => tipShow(d, e));
+    li.addEventListener("mouseleave", tipHide);
+  });
+  document.getElementById("listmode").textContent =
+    `Ranked by ${state.risk === "pref_lo" ? "worst-case" : state.risk === "pref_hi" ? "best-case" : "median"} preference × obscurity^γ (γ=${state.gamma.toFixed(1)}), max 2 per artist`;
+}
+
+document.getElementById("gamma").addEventListener("input", e => {
+  state.gamma = parseFloat(e.target.value);
+  document.getElementById("gamma-out").textContent = "γ = " + state.gamma.toFixed(1);
+  draw();
+});
+for (const [id, key] of [["risk", "risk"], ["genres", "genre"]]) {
+  document.getElementById(id).addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    state[key] = b.dataset.v;
+    b.parentElement.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", c === b));
+    draw();
+  });
+}
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+draw();
+</script>
