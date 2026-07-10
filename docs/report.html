@@ -1,0 +1,293 @@
+<title>spotify-taste-model — an evaluation story</title>
+<style>
+  :root {
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e;
+    --muted: #898781; --grid: #e1e0d9; --baseline: #c3c2b7;
+    --border: rgba(11,11,11,.10); --accent: #4a3aa7;
+    --s1: #2a78d6; --s2: #1baf7a; --bad: #d03b3b; --warn: #c98500; --good: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+      --muted: #898781; --grid: #2c2c2a; --baseline: #383835;
+      --border: rgba(255,255,255,.10); --accent: #9085e9;
+      --s1: #3987e5; --s2: #199e70; --bad: #e66767; --warn: #eda100; --good: #0ca30c;
+    }
+  }
+  :root[data-theme="light"] {
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e;
+    --muted: #898781; --grid: #e1e0d9; --baseline: #c3c2b7;
+    --border: rgba(11,11,11,.10); --accent: #4a3aa7;
+    --s1: #2a78d6; --s2: #1baf7a; --bad: #d03b3b; --warn: #c98500; --good: #006300;
+  }
+  :root[data-theme="dark"] {
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+    --muted: #898781; --grid: #2c2c2a; --baseline: #383835;
+    --border: rgba(255,255,255,.10); --accent: #9085e9;
+    --s1: #3987e5; --s2: #199e70; --bad: #e66767; --warn: #eda100; --good: #0ca30c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--ink);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 56px 24px 80px; }
+  .eyebrow {
+    font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; margin: 0 0 14px;
+  }
+  h1 {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    font-size: clamp(30px, 5.4vw, 42px); line-height: 1.15; text-wrap: balance;
+    margin: 0 0 14px; font-weight: 600;
+  }
+  .standfirst { font-size: 18px; color: var(--ink-2); margin: 0 0 8px; max-width: 60ch; }
+  .byline { font-size: 13px; color: var(--muted); margin: 0 0 40px; }
+  h2 {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    font-size: 24px; margin: 56px 0 6px; font-weight: 600; text-wrap: balance;
+  }
+  .kicker { font-size: 13px; color: var(--muted); margin: 0 0 18px; }
+  p { max-width: 65ch; margin: 0 0 16px; }
+  strong { font-weight: 650; }
+  a { color: var(--accent); }
+  code {
+    font: 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 4px; padding: 1px 5px;
+  }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 28px 0 8px; }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; }
+  .tile .v { font-size: 30px; font-weight: 650; line-height: 1.1; }
+  .tile .l { font-size: 12px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-top: 6px; }
+  .tile .n { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; }
+  /* AUC story */
+  .story { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 26px 0 10px; }
+  .act { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px; position: relative; }
+  .act .tag { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+  .act .auc { font-size: 44px; font-weight: 700; line-height: 1.1; margin: 8px 0 2px; font-variant-numeric: tabular-nums; }
+  .act .sub { font-size: 13px; color: var(--ink-2); }
+  .act .meter { height: 6px; border-radius: 3px; background: var(--grid); margin-top: 14px; overflow: hidden; }
+  .act .meter i { display: block; height: 100%; border-radius: 3px; }
+  .act.broken .tag { color: var(--bad); } .act.broken .meter i { background: var(--bad); }
+  .act.leaky  .tag { color: var(--warn); } .act.leaky  .meter i { background: var(--warn); }
+  .act.honest .tag { color: var(--good); } .act.honest .meter i { background: var(--good); }
+  .story-note { font-size: 13px; color: var(--muted); margin: 0 0 16px; }
+  figure { margin: 26px 0 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px 20px 14px; }
+  figcaption { font-size: 13px; color: var(--muted); margin-top: 10px; }
+  .fig-title { font-size: 14px; font-weight: 650; margin: 0 0 2px; }
+  .fig-sub { font-size: 12.5px; color: var(--muted); margin: 0 0 14px; }
+  .legend { display: flex; gap: 16px; font-size: 12.5px; color: var(--ink-2); margin: 0 0 12px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  svg text { font: 12px system-ui, -apple-system, sans-serif; fill: var(--ink-2); }
+  svg .axis text { fill: var(--muted); font-size: 11px; }
+  svg .val { font-variant-numeric: tabular-nums; }
+  .bar { cursor: default; }
+  .bar:hover, .bar:focus { opacity: .82; outline: none; }
+  .bar:focus-visible rect { stroke: var(--accent); stroke-width: 2px; }
+  #tip {
+    position: fixed; pointer-events: none; background: var(--ink); color: var(--page);
+    font-size: 12.5px; padding: 6px 9px; border-radius: 6px; opacity: 0;
+    transition: opacity .12s; max-width: 260px; z-index: 10;
+  }
+  @media (prefers-reduced-motion: reduce) { #tip { transition: none; } }
+  .callout {
+    border-left: 3px solid var(--accent); background: var(--surface);
+    border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 24px 0; font-size: 15px;
+  }
+  .callout .t { font-weight: 650; }
+  ol.pipeline { list-style: none; counter-reset: step; padding: 0; margin: 20px 0; display: grid; gap: 10px; }
+  ol.pipeline li {
+    counter-increment: step; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 16px 12px 52px; position: relative; font-size: 14.5px;
+  }
+  ol.pipeline li::before {
+    content: counter(step); position: absolute; left: 16px; top: 12px;
+    width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: var(--page);
+    font-size: 12.5px; font-weight: 700; display: grid; place-items: center;
+  }
+  ul.caveats { padding-left: 20px; max-width: 65ch; } ul.caveats li { margin-bottom: 10px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  .tablewrap { overflow-x: auto; }
+  th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--baseline); }
+  td { padding: 8px 12px 8px 0; border-bottom: 1px solid var(--grid); }
+  td.num { font-variant-numeric: tabular-nums; }
+  footer { margin-top: 64px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--grid); padding-top: 18px; }
+  @media (max-width: 640px) { .story { grid-template-columns: 1fr; } }
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">A personal ML experiment</p>
+  <h1>Do I know my taste better than my recommender?</h1>
+  <p class="standfirst">Predicting which songs I'll like from my real Spotify library — with no audio
+  features, 148 tracks, and an evaluation designed to be hard to fool.</p>
+  <p class="byline">Aditya Guru · July 2026 · data pulled live via the Spotify MCP connector</p>
+
+  <div class="tiles">
+    <div class="tile"><div class="v">0.615</div><div class="l">Leave-artist-out AUC</div><div class="n">logistic regression, leak-free</div></div>
+    <div class="tile"><div class="v">0.60</div><div class="l">Precision@10</div><div class="n">6 of top 10 are true likes</div></div>
+    <div class="tile"><div class="v">148</div><div class="l">Tracks</div><div class="n">51 liked · 97 weak negatives</div></div>
+    <div class="tile"><div class="v">48</div><div class="l">Artists</div><div class="n">held out whole in CV</div></div>
+  </div>
+
+  <h2>The result is the third number, and the story is how we got there</h2>
+  <p class="kicker">Same data, same models — three evaluations.</p>
+  <div class="story">
+    <div class="act broken">
+      <span class="tag">v1 · Broken</span>
+      <div class="auc">0.28</div>
+      <div class="sub">100+ tracks had no artist or genre; every unknown artist collapsed into one giant CV group. Below coin-flip means the pipeline is broken, not the taste.</div>
+      <div class="meter"><i style="width:28%"></i></div>
+    </div>
+    <div class="act leaky">
+      <span class="tag">v2 · Leaky</span>
+      <div class="auc">0.95</div>
+      <div class="sub">Looked brilliant. Was fraud: a source-count feature encoded the label's origin, and artist liked-rates were computed across CV folds.</div>
+      <div class="meter"><i style="width:95%"></i></div>
+    </div>
+    <div class="act honest">
+      <span class="tag">v3 · Honest</span>
+      <div class="auc">0.615</div>
+      <div class="sub">Content features only, whole artists held out. The model must generalize taste to artists it has never seen — and still beats chance.</div>
+      <div class="meter"><i style="width:61.5%"></i></div>
+    </div>
+  </div>
+  <p class="story-note">On 148 rows, an AUC of 0.95 is an accusation, not a result.</p>
+
+  <p>The "negatives" here aren't dislikes — they're tracks from my own Made-For-You mixes that I
+  haven't saved. Spotify's recommender already thinks I might like them, which makes this a
+  <strong>positive-unlabeled (PU) learning</strong> problem and every metric above a
+  <em>lower bound</em> on true discrimination.</p>
+
+  <h2>What the model learned about me</h2>
+  <p class="kicker">Two honest splits of the library, by genre and by era.</p>
+
+  <figure>
+    <p class="fig-title">Genre share: what I like vs. what I get recommended</p>
+    <p class="fig-sub">Percent of each group among tracks with a resolved genre (29 liked, 66 candidates)</p>
+    <div class="legend"><span><i style="background:var(--s1)"></i>My liked songs</span><span><i style="background:var(--s2)"></i>Mix candidates</span></div>
+    <svg viewBox="0 0 640 190" role="img" aria-label="Grouped bar chart of genre share for liked songs versus mix candidates">
+      <g class="axis">
+        <line x1="130" y1="4" x2="130" y2="168" stroke="var(--baseline)"/>
+      </g>
+      <!-- Alternative 51.7 vs 24.2 -->
+      <text x="122" y="24" text-anchor="end">Alternative</text>
+      <g class="bar" tabindex="0" data-tip="Alternative — 52% of my liked songs (15/29)"><rect x="131" y="12" width="284" height="12" rx="4" fill="var(--s1)"/><text class="val" x="421" y="23">52%</text></g>
+      <g class="bar" tabindex="0" data-tip="Alternative — 24% of mix candidates (16/66)"><rect x="131" y="27" width="133" height="12" rx="4" fill="var(--s2)"/><text class="val" x="270" y="38">24%</text></g>
+      <!-- Hip-Hop 34.5 vs 47 -->
+      <text x="122" y="66" text-anchor="end">Hip-Hop/Rap</text>
+      <g class="bar" tabindex="0" data-tip="Hip-Hop/Rap — 34% of my liked songs (10/29)"><rect x="131" y="54" width="190" height="12" rx="4" fill="var(--s1)"/><text class="val" x="327" y="65">34%</text></g>
+      <g class="bar" tabindex="0" data-tip="Hip-Hop/Rap — 47% of mix candidates (31/66)"><rect x="131" y="69" width="258" height="12" rx="4" fill="var(--s2)"/><text class="val" x="395" y="80">47%</text></g>
+      <!-- R&B 6.9 vs 15.2 -->
+      <text x="122" y="108" text-anchor="end">R&amp;B/Soul</text>
+      <g class="bar" tabindex="0" data-tip="R&B/Soul — 7% of my liked songs (2/29)"><rect x="131" y="96" width="38" height="12" rx="4" fill="var(--s1)"/><text class="val" x="175" y="107">7%</text></g>
+      <g class="bar" tabindex="0" data-tip="R&B/Soul — 15% of mix candidates (10/66)"><rect x="131" y="111" width="84" height="12" rx="4" fill="var(--s2)"/><text class="val" x="221" y="122">15%</text></g>
+      <!-- Pop 6.9 vs 13.6 -->
+      <text x="122" y="150" text-anchor="end">Pop</text>
+      <g class="bar" tabindex="0" data-tip="Pop — 7% of my liked songs (2/29)"><rect x="131" y="138" width="38" height="12" rx="4" fill="var(--s1)"/><text class="val" x="175" y="149">7%</text></g>
+      <g class="bar" tabindex="0" data-tip="Pop — 14% of mix candidates (9/66)"><rect x="131" y="153" width="75" height="12" rx="4" fill="var(--s2)"/><text class="val" x="212" y="164">14%</text></g>
+    </svg>
+    <figcaption>I over-index on Alternative relative to what I'm served; the mixes push more rap, R&amp;B and pop than I save.</figcaption>
+  </figure>
+
+  <figure>
+    <p class="fig-title">Era: my likes live a decade behind my recommendations</p>
+    <p class="fig-sub">Percent of each group by release period (tracks with a resolved year)</p>
+    <div class="legend"><span><i style="background:var(--s1)"></i>My liked songs</span><span><i style="background:var(--s2)"></i>Mix candidates</span></div>
+    <svg viewBox="0 0 640 210" role="img" aria-label="Column chart comparing release-era distribution of liked songs and mix candidates">
+      <g class="axis">
+        <line x1="36" y1="170" x2="628" y2="170" stroke="var(--baseline)"/>
+        <line x1="36" y1="110" x2="628" y2="110" stroke="var(--grid)"/><text x="4" y="114">25%</text>
+        <line x1="36" y1="50"  x2="628" y2="50"  stroke="var(--grid)"/><text x="4" y="54">50%</text>
+      </g>
+      <!-- buckets: liked% 10.7,14.3,25,32.1,7.1,10.7 | cand% 0,1.5,13.6,24.2,13.6,47 ; scale: 1% = 2.4px -->
+      <g class="bar" tabindex="0" data-tip="2000–04 — liked 11% · candidates 0%"><rect x="52"  y="144.3" width="30" height="25.7" rx="4" fill="var(--s1)"/><rect x="86"  y="169" width="30" height="1" fill="var(--s2)"/></g>
+      <g class="bar" tabindex="0" data-tip="2005–09 — liked 14% · candidates 2%"><rect x="150" y="135.7" width="30" height="34.3" rx="4" fill="var(--s1)"/><rect x="184" y="166.4" width="30" height="3.6" rx="1.5" fill="var(--s2)"/></g>
+      <g class="bar" tabindex="0" data-tip="2010–14 — liked 25% · candidates 14%"><rect x="248" y="110" width="30" height="60" rx="4" fill="var(--s1)"/><rect x="282" y="137.4" width="30" height="32.6" rx="4" fill="var(--s2)"/></g>
+      <g class="bar" tabindex="0" data-tip="2015–19 — liked 32% · candidates 24%"><rect x="346" y="92.9" width="30" height="77.1" rx="4" fill="var(--s1)"/><rect x="380" y="111.9" width="30" height="58.1" rx="4" fill="var(--s2)"/></g>
+      <g class="bar" tabindex="0" data-tip="2020–22 — liked 7% · candidates 14%"><rect x="444" y="152.9" width="30" height="17.1" rx="4" fill="var(--s1)"/><rect x="478" y="137.4" width="30" height="32.6" rx="4" fill="var(--s2)"/></g>
+      <g class="bar" tabindex="0" data-tip="2023–25 — liked 11% · candidates 47%"><rect x="542" y="144.3" width="30" height="25.7" rx="4" fill="var(--s1)"/><rect x="576" y="57.2" width="30" height="112.8" rx="4" fill="var(--s2)"/></g>
+      <g class="axis">
+        <text x="84"  y="188" text-anchor="middle">2000–04</text>
+        <text x="182" y="188" text-anchor="middle">2005–09</text>
+        <text x="280" y="188" text-anchor="middle">2010–14</text>
+        <text x="378" y="188" text-anchor="middle">2015–19</text>
+        <text x="476" y="188" text-anchor="middle">2020–22</text>
+        <text x="574" y="188" text-anchor="middle">2023–25</text>
+      </g>
+    </svg>
+    <figcaption>Half of what Spotify serves me is 2023–25; a third of what I actually save is 2010s. The model turned this into its strongest honest feature.</figcaption>
+  </figure>
+
+  <h2>The songs the model bets I'll love</h2>
+  <p class="kicker">Highest-scored tracks I haven't saved (top 8 with resolved metadata shown; full top-20 in the repo).</p>
+  <figure>
+    <svg viewBox="0 0 640 330" role="img" aria-label="Ranked bar chart of the model's top predicted likes with scores">
+      <!-- scale: score*560px, x from 8; rows h=33 -->
+      <g class="bar" tabindex="0" data-tip="Gorillaz · Alternative · 2005 — score 0.784"><rect x="8" y="6" width="439" height="14" rx="4" fill="var(--s1)"/><text x="12" y="34">Feel Good Inc. — Gorillaz</text><text class="val" x="453" y="17">0.784</text></g>
+      <g class="bar" tabindex="0" data-tip="Mac Miller · Hip-Hop/Rap · 2010 — score 0.726"><rect x="8" y="46" width="407" height="14" rx="4" fill="var(--s1)"/><text x="12" y="74">Nikes on My Feet — Mac Miller</text><text class="val" x="421" y="57">0.726</text></g>
+      <g class="bar" tabindex="0" data-tip="Grouplove · Alternative · 2011 — score 0.652"><rect x="8" y="86" width="365" height="14" rx="4" fill="var(--s1)"/><text x="12" y="114">Tongue Tied — Grouplove</text><text class="val" x="379" y="97">0.652</text></g>
+      <g class="bar" tabindex="0" data-tip="Unresolved artist — score 0.639. Ranked here because its title is literally spelled like 'coldplay'."><rect x="8" y="126" width="358" height="14" rx="4" fill="var(--accent)"/><text x="12" y="154">A COLD PLAY — unknown ◆</text><text class="val" x="372" y="137">0.639</text></g>
+      <g class="bar" tabindex="0" data-tip="Arctic Monkeys · Alternative · 2013 — score 0.597"><rect x="8" y="166" width="334" height="14" rx="4" fill="var(--s1)"/><text x="12" y="194">I Wanna Be Yours — Arctic Monkeys</text><text class="val" x="348" y="177">0.597</text></g>
+      <g class="bar" tabindex="0" data-tip="Travis Scott · Hip-Hop/Rap · 2014 — score 0.582"><rect x="8" y="206" width="326" height="14" rx="4" fill="var(--s1)"/><text x="12" y="234">Drugs You Should Try It — Travis Scott</text><text class="val" x="340" y="217">0.582</text></g>
+      <g class="bar" tabindex="0" data-tip="Vance Joy · Alternative · 2013 — score 0.565"><rect x="8" y="246" width="316" height="14" rx="4" fill="var(--s1)"/><text x="12" y="274">Riptide — Vance Joy</text><text class="val" x="330" y="257">0.565</text></g>
+      <g class="bar" tabindex="0" data-tip="Cage The Elephant · Alternative · 2013 — score 0.548"><rect x="8" y="286" width="307" height="14" rx="4" fill="var(--s1)"/><text x="12" y="314">Come a Little Closer — Cage The Elephant</text><text class="val" x="321" y="297">0.548</text></g>
+    </svg>
+    <figcaption>Hover any bar for genre, era and score. ◆ marks the one that earned a callout below.</figcaption>
+  </figure>
+
+  <div class="callout">
+    <span class="t">Favorite failure mode.</span> A song literally titled <em>"A COLD PLAY"</em> ranked
+    fourth — the character-ngram TF-IDF learned that strings spelled like <em>coldplay</em> are things
+    I like, and it isn't even wrong about why. Title text is a real signal and a real trap.
+  </div>
+
+  <h2>How it works</h2>
+  <ol class="pipeline">
+    <li><strong>Collect.</strong> Liked Songs + four Made-For-You mixes pulled live through the Spotify MCP connector (the audio-features API is gone; titles, artists and durations are what you get).</li>
+    <li><strong>Enrich.</strong> Artist, genre and release year recovered via the iTunes Search API — throttled, cached, fuzzy-matched with confidence scores; unknowns stay NaN rather than guessed.</li>
+    <li><strong>Featurize.</strong> Genre one-hots, era, duration, explicit flag, char-ngram TF-IDF over title+artist. Source-derived features are banned: the label is defined by source membership.</li>
+    <li><strong>Evaluate honestly.</strong> Leave-one-artist-out CV — whole artists held out so the model can't win by memorizing that I like Coldplay. Logistic regression beats gradient boosting here (small-data regularization wins).</li>
+    <li><strong>Rank.</strong> The final model (plus a leave-one-out artist affinity, excluded from evaluation) scores every unsaved track into a top-20 with per-song "why" explanations.</li>
+  </ol>
+
+  <h2>What I'd tell a reviewer</h2>
+  <ul class="caveats">
+    <li><strong>PU learning, not classification.</strong> Unsaved mix tracks are plausible likes, so 0.615 is a floor, not a ceiling. Getting true negatives needs a blind listening test (planned: rerank vs. Spotify's order, A/B).</li>
+    <li><strong>148 tracks.</strong> Every number carries wide error bars; the point is the methodology, not the third decimal.</li>
+    <li><strong>Selection bias.</strong> Candidates come pre-filtered by Spotify's recommender — this model reranks a shortlist, it doesn't search the catalog.</li>
+    <li><strong>Enrichment provenance.</strong> Where the network-restricted run couldn't reach iTunes, a hand-curated table (high-confidence only, flagged in the repo) fills artist/genre/year.</li>
+  </ul>
+
+  <div class="tablewrap">
+  <table>
+    <caption class="kicker" style="text-align:left; caption-side:top; padding:8px 0;">Model comparison, leave-one-artist-out CV</caption>
+    <tr><th>Model</th><th>ROC-AUC</th><th>Precision@10</th></tr>
+    <tr><td>Logistic regression (L2, balanced)</td><td class="num">0.615</td><td class="num">0.60</td></tr>
+    <tr><td>Gradient-boosted trees</td><td class="num">0.561</td><td class="num">0.30</td></tr>
+    <tr><td>Chance</td><td class="num">0.500</td><td class="num">0.34</td></tr>
+  </table>
+  </div>
+
+  <footer>
+    Code, data and pipeline: <code>spotify-taste-model</code> repo · built with Claude Code,
+    ideation with GPT-5 Codex · my own listening data, collected July 2026.
+  </footer>
+</div>
+<div id="tip" role="tooltip"></div>
+<script>
+  const tip = document.getElementById('tip');
+  document.querySelectorAll('.bar').forEach(el => {
+    const show = e => {
+      tip.textContent = el.dataset.tip; tip.style.opacity = 1;
+      const x = (e.clientX ?? el.getBoundingClientRect().x) + 12;
+      const y = (e.clientY ?? el.getBoundingClientRect().y) - 8;
+      tip.style.left = Math.min(x, innerWidth - tip.offsetWidth - 8) + 'px';
+      tip.style.top = Math.max(8, y - tip.offsetHeight) + 'px';
+    };
+    el.addEventListener('mousemove', show);
+    el.addEventListener('focus', show);
+    el.addEventListener('mouseleave', () => tip.style.opacity = 0);
+    el.addEventListener('blur', () => tip.style.opacity = 0);
+  });
+</script>
