@@ -156,9 +156,19 @@
       list.querySelectorAll("li").forEach(li =>
         li.addEventListener("click", () => focusStar(stars[+li.dataset.i])));
       document.getElementById("gems").classList.add("show");
+      sessionStorage.removeItem("nebula_reauth");
       hintMsg(`${stars.length} SONGS FROM YOUR ${topArtists.length} MOST-LOVED ARTISTS — ALL YOURS, NONE YOU KNOW`, true);
       setTimeout(() => hintMsg("", false), 9000);
     } catch (e) {
+      // A 403 here means the cached token predates the top-artists/library
+      // scopes — re-consent once, automatically.
+      if (/403/.test(String(e.message)) && !sessionStorage.getItem("nebula_reauth")) {
+        sessionStorage.setItem("nebula_reauth", "1");
+        token = null; sessionStorage.removeItem("nebula_sp_token");
+        hintMsg("NEBULA NEEDS UPDATED PERMISSIONS — SENDING YOU TO SPOTIFY…");
+        setTimeout(login, 900);
+        return;
+      }
       hintMsg("couldn't read your Spotify: " + e.message, true);
     }
   }
