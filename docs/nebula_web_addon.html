@@ -19,7 +19,7 @@
   zone.id = "spotifyzone";
   document.getElementById("cratepanel").appendChild(zone);
   const REDIRECT = location.origin + location.pathname;
-  const SCOPES = "playlist-read-private playlist-modify-private playlist-modify-public";
+  const SCOPES = "playlist-read-private playlist-modify-private playlist-modify-public user-read-private user-read-email";
   const HARD_CID = "9f0f908cd188406ba5f458b8c6270b19";   // NEBULA's registered Spotify app
   const cid = () => HARD_CID || localStorage.getItem("nebula_spotify_cid") || "";
   let token = sessionStorage.getItem("nebula_sp_token") || null;
@@ -79,13 +79,9 @@
         <button class="btn green" id="sp-create">EXPORT CRATE → NEW PLAYLIST</button>
         <select id="sp-list" aria-label="choose an existing playlist"><option>loading your playlists…</option></select>
         <button class="btn ghost" id="sp-add">ADD CRATE TO SELECTED PLAYLIST</button>
-        <div id="sp-status" class="ok">connected ✓</div>
-        <button class="btn ghost" id="sp-reauth" style="margin-top:7px">↻ RECONNECT (fresh permissions)</button>`;
+        <div id="sp-status" class="ok">connected ✓</div>`;
       zone.querySelector("#sp-create").onclick = () => exportCrate(null, zone.querySelector("#sp-name").value || "NEBULA finds");
       zone.querySelector("#sp-add").onclick = () => exportCrate(zone.querySelector("#sp-list").value, null);
-      zone.querySelector("#sp-reauth").onclick = () => {
-        token = null; sessionStorage.removeItem("nebula_sp_token"); login(true);
-      };
       loadPlaylists();
     }
   }
@@ -132,6 +128,7 @@
   async function loadPlaylists() {
     try {
       const me = await api("/me"); zone.dataset.uid = me.id;
+      status(`connected ✓ as ${me.display_name || me.id}${me.email ? " · " + me.email : ""} — this exact email must be in the app's User Management`, true);
       const pl = await api("/me/playlists?limit=50");
       const sel = zone.querySelector("#sp-list");
       const mine = (pl.items || []).filter(p => p && p.owner && p.owner.id === me.id);
@@ -156,8 +153,9 @@
       if (!uris.length) { status("couldn't match any tracks on Spotify"); return; }
       let playlistUrl = null;
       if (!playlistId) {
-        const me = await api("/me");
-        const p = await api(`/users/${me.id}/playlists`, {
+        // Spotify's Feb 2026 migration: POST /users/{id}/playlists is gone
+        // for dev-mode apps — /me/playlists is the replacement.
+        const p = await api(`/me/playlists`, {
           method: "POST", body: JSON.stringify({ name: newName, public: false, description: "Hidden gems found in NEBULA — taste-embedding × obscurity." }),
         });
         if (!p.id) throw new Error("playlist create returned no id");
@@ -165,7 +163,12 @@
       } else {
         playlistUrl = "https://open.spotify.com/playlist/" + playlistId;
       }
-      await api(`/playlists/${playlistId}/tracks`, { method: "POST", body: JSON.stringify({ uris }) });
+      // Same migration renamed /tracks to /items; fall back for older apps.
+      try {
+        await api(`/playlists/${playlistId}/items`, { method: "POST", body: JSON.stringify({ uris }) });
+      } catch {
+        await api(`/playlists/${playlistId}/tracks`, { method: "POST", body: JSON.stringify({ uris }) });
+      }
       const el = zone.querySelector("#sp-status");
       if (el) el.innerHTML = `exported ${uris.length}/${crate.length} tracks ✓ — <a href="${playlistUrl}" target="_blank" rel="noopener" style="color:#1fdf64">OPEN PLAYLIST ↗</a>`;
       loadPlaylists();
