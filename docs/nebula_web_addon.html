@@ -19,9 +19,149 @@
   zone.id = "spotifyzone";
   document.getElementById("cratepanel").appendChild(zone);
   const REDIRECT = location.origin + location.pathname;
-  const SCOPES = "playlist-read-private playlist-modify-private playlist-modify-public user-read-private user-read-email";
+  const SCOPES = "playlist-read-private playlist-modify-private playlist-modify-public user-read-private user-read-email user-top-read user-library-read user-library-modify";
   const HARD_CID = "9f0f908cd188406ba5f458b8c6270b19";   // NEBULA's registered Spotify app
   const cid = () => HARD_CID || localStorage.getItem("nebula_spotify_cid") || "";
+
+  /* ============ personalized galaxy: their Spotify, their stars ============ */
+  const GENRE_BUCKET = g => {
+    const s = (g || []).join(" ").toLowerCase();
+    if (/rap|hip hop|trap|drill|grime/.test(s)) return 1;
+    if (/r&b|soul|funk|neo/.test(s)) return 2;
+    if (/pop/.test(s) && !/rock|indie|alt/.test(s)) return 3;
+    return 0;
+  };
+  const hashRnd = (str, salt) => {
+    let h = 7 + salt;
+    for (const ch of str) h = (h * 31 + ch.charCodeAt(0)) | 0;
+    return ((h >>> 3) % 1000) / 1000;
+  };
+  function focusStar(s) {
+    openCard(s); s.flare = 2.2;
+    cam.tYaw = Math.atan2(-s.x, -s.z) + Math.PI;
+    cam.tPitch = Math.atan2(s.y, Math.hypot(s.x, s.z)) * 0.9;
+    cam.tDist = 1.5;
+  }
+  const hintMsg = (m, on = true) => {
+    const h = document.getElementById("hint");
+    h.textContent = m; h.classList.toggle("on", on);
+  };
+
+  async function buildUserGalaxy() {
+    document.getElementById("dock").style.display = "none";   // no seed bar — it's automatic
+    try {
+      hintMsg("READING YOUR SPOTIFY — MAPPING YOUR GALAXY…");
+      const topArtists = (await api("/me/top/artists?limit=15&time_range=medium_term")).items || [];
+      const topTracks = (await api("/me/top/tracks?limit=50&time_range=medium_term")).items || [];
+      if (!topArtists.length) { hintMsg("not enough listening history yet — play more music and come back", true); return; }
+      const knownIds = new Set(topTracks.map(t => t.id));
+      const knownNames = new Set(topTracks.map(t => t.name.toLowerCase().replace(/\s*[\(\[].*$/, "").trim()));
+
+      // Deep cuts: walk each loved artist's catalog.
+      const raw = [];
+      for (const [ai, artist] of topArtists.entries()) {
+        try {
+          const albums = (await api(`/artists/${artist.id}/albums?include_groups=album,single&limit=6&market=from_token`)).items || [];
+          const seen = new Set(); const picked = [];
+          for (const al of albums) {
+            const key = al.name.toLowerCase();
+            if (!seen.has(key)) { seen.add(key); picked.push(al); }
+            if (picked.length === 4) break;
+          }
+          for (const al of picked) {
+            const tr = (await api(`/albums/${al.id}/tracks?limit=50`)).items || [];
+            for (const t of tr) {
+              if (t.artists?.[0]?.id !== artist.id) continue;
+              raw.push({ id: t.id, name: t.name, artist, artistRank: ai, duration_ms: t.duration_ms, explicit: t.explicit });
+            }
+            await new Promise(r => setTimeout(r, 60));
+          }
+        } catch { /* one bad artist shouldn't kill the galaxy */ }
+      }
+
+      // Dedupe, drop what they already know, fetch real popularity in batches.
+      const byName = new Map();
+      for (const t of raw) {
+        const key = t.artist.id + "|" + t.name.toLowerCase().replace(/\s*[\(\[].*$/, "").replace(/\s*-\s*(live|remaster|acoustic|remix).*$/i, "").trim();
+        if (knownIds.has(t.id)) continue;
+        if (knownNames.has(t.name.toLowerCase().replace(/\s*[\(\[].*$/, "").trim())) continue;
+        if (!byName.has(key)) byName.set(key, t);
+      }
+      let pool = [...byName.values()];
+      hintMsg(`FOUND ${pool.length} TRACKS IN YOUR SECTOR — WEIGHING THEM…`);
+      const full = [];
+      for (let i = 0; i < pool.length && full.length < 400; i += 50) {
+        const ids = pool.slice(i, i + 50).map(t => t.id).join(",");
+        const r = await api(`/tracks?ids=${ids}`);
+        for (const t of (r.tracks || [])) if (t) full.push(t);
+        await new Promise(r => setTimeout(r, 60));
+      }
+      const popById = new Map(full.map(t => [t.id, t.popularity ?? 50]));
+      // Drop already-saved tracks.
+      const savedMask = [];
+      for (let i = 0; i < pool.length; i += 50) {
+        const ids = pool.slice(i, i + 50).map(t => t.id).join(",");
+        try { savedMask.push(...await api(`/me/tracks/contains?ids=${ids}`)); }
+        catch { savedMask.push(...pool.slice(i, i + 50).map(() => false)); }
+      }
+      pool = pool.filter((t, i) => !savedMask[i] && popById.has(t.id) && (popById.get(t.id) ?? 100) <= 70);
+      if (pool.length < 10) { hintMsg("your artists' catalogs are all hits you know — try again after more listening", true); return; }
+
+      // Rebuild the star field: THEIR songs only.
+      stars.length = 0;
+      const vecs = [];
+      pool.forEach((t, i) => {
+        const obs = 1 - (popById.get(t.id) ?? 50) / 100;
+        const th = t.artistRank * 2.399963 + (hashRnd(t.artist.id, 1) - 0.5) * 0.4;
+        const ph = ((t.artistRank * 0.618) % 1 - 0.5) * 1.0 + (hashRnd(t.id, 2) - 0.5) * 0.3;
+        const r = 0.30 + 0.70 * obs;
+        const jx = (hashRnd(t.id, 3) - 0.5) * 0.16, jy = (hashRnd(t.id, 4) - 0.5) * 0.16, jz = (hashRnd(t.id, 5) - 0.5) * 0.16;
+        stars.push({
+          x: Math.cos(th) * Math.cos(ph) * r + jx, y: Math.sin(ph) * r * 0.8 + jy, z: Math.sin(th) * Math.cos(ph) * r + jz,
+          g: GENRE_BUCKET(t.artist.genres), obs, title: t.name, artist: t.artist.name,
+          i, tw: hashRnd(t.id, 6) * 6.28, flare: 0, gem: false, uri: "spotify:track:" + t.id,
+          affinity: 1 / (1 + t.artistRank / 4),
+        });
+        const v = new Array(16).fill(0).map((_, d) => hashRnd(t.id, 10 + d) - 0.5);
+        v[0] = Math.cos(th); v[1] = Math.sin(th); vecs.push(v);
+      });
+      DATA.cand_vecs = vecs;
+
+      // Auto-rank: love-affinity × obscurity, max 2 per artist — no clicking needed.
+      const ranked = [...stars].map(s => ({ s, score: s.affinity * (0.35 + 0.65 * s.obs) }))
+        .sort((a, b) => b.score - a.score);
+      const top = [], counts = {};
+      for (const r of ranked) {
+        const a = r.s.artist.toLowerCase();
+        if ((counts[a] || 0) >= 2) continue; counts[a] = (counts[a] || 0) + 1;
+        top.push(r); if (top.length === 10) break;
+      }
+      lastMatch = new Map(ranked.map((r, i) => [r.s.i, 1 - i / ranked.length]));
+      let bx = 0, by = 0, bz = 0;
+      for (const r of top) { r.s.gem = true; r.s.flare = 1.6; bx += r.s.x; by += r.s.y; bz += r.s.z; }
+      beacon = { x: bx / top.length, y: by / top.length, z: bz / top.length };
+      cam.tYaw = Math.atan2(-beacon.x, -beacon.z) + Math.PI;
+      cam.tPitch = Math.atan2(beacon.y, Math.hypot(beacon.x, beacon.z)) * 0.9;
+      cam.tDist = 1.6;
+
+      // Right sidebar: their top 10 — click opens the song card directly.
+      document.querySelector("#gems .h").textContent = "YOUR TOP 10 — SONGS YOU'LL LOVE";
+      const list = document.getElementById("gemlist");
+      list.innerHTML = top.map((r, i) => `
+        <li data-i="${r.s.i}">
+          <span class="rk mono">${String(i + 1).padStart(2, "0")}</span>
+          <span><span class="t">${r.s.title}</span><span class="a">${r.s.artist}</span></span>
+          <span class="m mono">${Math.round(r.s.obs * 100)}% hidden</span>
+        </li>`).join("");
+      list.querySelectorAll("li").forEach(li =>
+        li.addEventListener("click", () => focusStar(stars[+li.dataset.i])));
+      document.getElementById("gems").classList.add("show");
+      hintMsg(`${stars.length} SONGS FROM YOUR ${topArtists.length} MOST-LOVED ARTISTS — ALL YOURS, NONE YOU KNOW`, true);
+      setTimeout(() => hintMsg("", false), 9000);
+    } catch (e) {
+      hintMsg("couldn't read your Spotify: " + e.message, true);
+    }
+  }
   let token = sessionStorage.getItem("nebula_sp_token") || null;
 
   // Entry-point connect: a button on the landing itself, so linking happens
@@ -143,6 +283,8 @@
       status("finding your tracks on Spotify…");
       const uris = [];
       for (const c of crate) {
+        const st = typeof stars !== "undefined" && stars[c.i];
+        if (st && st.uri && st.title === c.title) { uris.push(st.uri); continue; }
         const cleanTitle = c.title.replace(/\s*[\(\[](feat|ft|with|from)\.?[^\)\]]*[\)\]]/gi, "").trim();
         const q = encodeURIComponent(`track:"${cleanTitle}" artist:"${c.artist.split(",")[0]}"`);
         const r = await api(`/search?q=${q}&type=track&limit=1`);
@@ -174,6 +316,16 @@
       loadPlaylists();
     } catch (e) { status("export failed: " + e.message); }
   }
-  handleCallback().then(() => { render(); mountEntryButton(); skipLandingIfConnected(); });
+  // ♥ on the card also saves/removes the song in their real Spotify library.
+  document.getElementById("c-like").addEventListener("click", () => {
+    if (!token || typeof cardStar === "undefined" || !cardStar?.uri) return;
+    const id = cardStar.uri.split(":").pop();
+    api(`/me/tracks?ids=${id}`, { method: likes.has(cardStar.i) ? "PUT" : "DELETE" }).catch(() => {});
+  });
+
+  handleCallback().then(() => {
+    render(); mountEntryButton(); skipLandingIfConnected();
+    if (token) buildUserGalaxy();
+  });
 })();
 </script>
