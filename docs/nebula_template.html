@@ -1,0 +1,590 @@
+<title>NEBULA — hear the dark side of the catalog</title>
+<style>
+  :root {
+    --space: #05060e; --panel: rgba(10, 13, 26, .82); --line: rgba(150, 170, 220, .16);
+    --ink: #e8ecf5; --dim: #8b93a8; --faint: #565e73;
+    --alt: #7fd4ff; --rap: #ffb45e; --rnb: #ff7fb0; --pop: #b39bff; --beacon: #fff3c4;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--space); color: var(--ink); overflow: hidden;
+    font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+
+  /* landing overlay */
+  #landing { position: fixed; inset: 0; display: grid; place-items: center; z-index: 30;
+    background: radial-gradient(ellipse at 50% 60%, rgba(5,6,14,.2), rgba(5,6,14,.92) 70%);
+    transition: opacity .9s; }
+  #landing.gone { opacity: 0; pointer-events: none; }
+  .hero { text-align: center; padding: 24px; max-width: 640px; }
+  .wordmark { font-size: 13px; letter-spacing: .55em; color: var(--dim); margin-bottom: 26px; }
+  .hero h1 { font-size: clamp(30px, 6vw, 54px); line-height: 1.08; margin: 0 0 18px; font-weight: 650;
+    letter-spacing: -.015em; text-wrap: balance; }
+  .hero h1 em { font-style: normal; color: var(--beacon); }
+  .hero p { color: var(--dim); font-size: 16px; margin: 0 auto 30px; max-width: 46ch; }
+  .ignite { font: 600 14px/1 ui-monospace, Menlo, monospace; letter-spacing: .18em; color: var(--space);
+    background: var(--beacon); border: 0; border-radius: 999px; padding: 15px 30px; cursor: pointer; }
+  .ignite:hover { filter: brightness(1.08); }
+  .hero .sub { font-size: 11.5px; color: var(--faint); margin-top: 18px; }
+  .howto { display: grid; gap: 8px; justify-content: center; text-align: left; font-size: 11.5px;
+    color: var(--dim); margin: 0 0 28px; letter-spacing: .04em; }
+  .howto b { color: var(--beacon); margin-right: 8px; font-weight: 600; }
+
+  /* hint pill + song card + crate */
+  #hint { top: 64px; left: 50%; transform: translateX(-50%); background: var(--panel); border: 1px solid var(--line);
+    border-radius: 999px; padding: 8px 16px; font-size: 11.5px; color: var(--dim); letter-spacing: .08em;
+    opacity: 0; transition: opacity .8s; pointer-events: none; }
+  #hint.on { opacity: 1; }
+  #card { top: 64px; left: 20px; width: 292px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 12px; padding: 16px; backdrop-filter: blur(10px); display: none; }
+  #card.show { display: block; }
+  #card .x { position: absolute; top: 8px; right: 10px; background: none; border: 0; color: var(--faint);
+    font-size: 16px; cursor: pointer; padding: 4px; }
+  #card .g { font-size: 10px; letter-spacing: .18em; margin-bottom: 8px; }
+  #card h3 { margin: 0 0 2px; font-size: 17px; line-height: 1.25; }
+  #card .art { color: var(--dim); font-size: 12.5px; margin-bottom: 12px; }
+  #card .desc { font-size: 12.5px; color: var(--ink); opacity: .92; line-height: 1.55; margin-bottom: 12px; }
+  #card .meter { margin-bottom: 6px; font-size: 10.5px; color: var(--dim); letter-spacing: .06em; }
+  #card .rail { height: 4px; border-radius: 2px; background: rgba(150,170,220,.15); margin-top: 4px; }
+  #card .rail i { display: block; height: 100%; border-radius: 2px; }
+  #card .acts { display: flex; gap: 7px; margin-top: 14px; flex-wrap: wrap; }
+  #card .act { flex: 1 1 auto; background: rgba(150,170,220,.08); border: 1px solid var(--line); color: var(--ink);
+    border-radius: 8px; padding: 9px 10px; font-size: 12px; cursor: pointer; text-align: center; text-decoration: none; }
+  #card .act:hover { border-color: var(--beacon); }
+  #card .act.liked { color: #ff7fb0; border-color: #ff7fb0; }
+  #cratebtn { top: 14px; right: 118px; background: var(--panel); color: var(--dim); border: 1px solid var(--line);
+    border-radius: 999px; padding: 7px 14px; font-size: 11.5px; letter-spacing: .1em; cursor: pointer; }
+  #cratebtn .n { color: var(--beacon); }
+  #cratepanel { top: 64px; right: 18px; width: 292px; max-height: calc(100vh - 240px); overflow-y: auto;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px;
+    backdrop-filter: blur(10px); display: none; z-index: 22; }
+  #cratepanel.show { display: block; }
+  #cratepanel .h { font-size: 10.5px; letter-spacing: .22em; color: var(--dim); margin-bottom: 10px; }
+  #cratepanel ul { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 7px; font-size: 12px; }
+  #cratepanel li { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  #cratepanel a { color: var(--dim); font-size: 10.5px; white-space: nowrap; }
+  #cratepanel .t { font-weight: 600; } #cratepanel .a2 { color: var(--dim); font-size: 10.5px; display: block; }
+  #cratepanel .copy { width: 100%; background: var(--beacon); color: var(--space); border: 0; border-radius: 8px;
+    padding: 10px; font: 600 12px ui-monospace, Menlo, monospace; letter-spacing: .1em; cursor: pointer; }
+  #cratepanel .empty { color: var(--faint); font-size: 11.5px; }
+  #cratepanel .rm { background: none; border: 0; color: var(--faint); cursor: pointer; font-size: 12px; padding: 2px 4px; }
+  #cratepanel .rm:hover { color: #ff7fb0; }
+
+  /* HUD chrome */
+  .hud { position: fixed; z-index: 20; }
+  #brand { top: 18px; left: 20px; font-size: 12px; letter-spacing: .5em; color: var(--dim); }
+  #mute { top: 14px; right: 18px; background: var(--panel); color: var(--dim); border: 1px solid var(--line);
+    border-radius: 999px; padding: 7px 14px; font-size: 11.5px; letter-spacing: .1em; cursor: pointer; }
+  #mute[aria-pressed="true"] { color: var(--beacon); border-color: var(--beacon); }
+  #legend { bottom: 148px; left: 20px; font-size: 10.5px; color: var(--faint); letter-spacing: .06em; display: grid; gap: 3px; }
+  #legend i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; }
+  #tip { position: fixed; z-index: 25; pointer-events: none; opacity: 0; background: var(--panel);
+    border: 1px solid var(--line); border-radius: 6px; padding: 7px 10px; font-size: 12px; max-width: 240px;
+    backdrop-filter: blur(6px); transition: opacity .1s; }
+  #tip b { color: var(--ink); } #tip span { color: var(--dim); font-size: 11px; }
+
+  /* seed dock */
+  #dock { bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(5,6,14,.94) 30%);
+    padding: 26px 20px 16px; }
+  #dock .lab { font-size: 10.5px; letter-spacing: .22em; color: var(--dim); margin-bottom: 9px; }
+  #seeds { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
+  .seed { flex: 0 0 auto; background: var(--panel); border: 1px solid var(--line); color: var(--dim);
+    border-radius: 8px; padding: 7px 11px; font-size: 12px; line-height: 1.3; cursor: pointer; text-align: left; }
+  .seed small { display: block; font-size: 10px; color: var(--faint); }
+  .seed[aria-pressed="true"] { border-color: var(--beacon); color: var(--ink); box-shadow: 0 0 14px rgba(255,243,196,.15); }
+  .seed:focus-visible, .ignite:focus-visible, #mute:focus-visible { outline: 2px solid var(--beacon); outline-offset: 2px; }
+
+  /* gems panel */
+  #gems { top: 64px; right: 18px; width: 264px; max-height: calc(100vh - 240px); overflow-y: auto;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px;
+    backdrop-filter: blur(8px); transform: translateX(300px); transition: transform .6s cubic-bezier(.2,.8,.2,1); }
+  #gems.show { transform: none; }
+  #gems .h { font-size: 10.5px; letter-spacing: .22em; color: var(--dim); margin-bottom: 10px; }
+  #gems ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  #gems li { display: grid; grid-template-columns: 16px 1fr auto; gap: 8px; font-size: 12px; align-items: baseline; cursor: pointer; }
+  #gems li:hover .t { color: var(--beacon); }
+  #gems .rk { color: var(--faint); font-size: 10.5px; }
+  #gems .t { font-weight: 600; line-height: 1.3; }
+  #gems .a { color: var(--dim); font-size: 10.5px; display: block; }
+  #gems .m { color: var(--beacon); font-size: 10.5px; }
+  #gems .note { font-size: 10px; color: var(--faint); margin-top: 10px; line-height: 1.5; }
+  #gems .note a { color: var(--dim); }
+  @media (prefers-reduced-motion: reduce) { #gems { transition: none; } #landing { transition: none; } }
+  @media (max-width: 700px) { #gems { width: calc(100vw - 36px); max-height: 38vh; } #legend { display: none; } }
+</style>
+
+<canvas id="sky" aria-label="A 3D galaxy where each star is a song; brighter stars are mainstream hits, dim outer stars are unheard tracks"></canvas>
+
+<div id="landing">
+  <div class="hero">
+    <div class="wordmark mono">N E B U L A</div>
+    <h1>100,000 songs are uploaded every day.<br><em>Almost all of them die unheard.</em></h1>
+    <p>This is the catalog as a galaxy: every star a real song, placed by a taste embedding —
+    the mainstream burning at the core, the unheard drifting at the rim.</p>
+    <div class="howto mono">
+      <span><b>01</b> DRAG to fly · SCROLL to zoom</span>
+      <span><b>02</b> PICK 3 songs you love below — we warp you to your sector</span>
+      <span><b>03</b> CLICK any star → hear about it, ♥ it, crate it</span>
+    </div>
+    <button class="ignite" id="ignite">IGNITE ENGINE →</button>
+    <div class="sub mono">real embeddings · real popularity data · sound on</div>
+  </div>
+</div>
+
+<div class="hud" id="brand">NEBULA</div>
+<button class="hud mono" id="mute" aria-pressed="true">SOUND ON</button>
+<button class="hud mono" id="cratebtn">CRATE <span class="n">0</span></button>
+<div class="hud mono" id="hint">DRAG TO FLY · SCROLL TO ZOOM · CLICK A STAR</div>
+
+<div class="hud" id="card">
+  <button class="x" aria-label="close">✕</button>
+  <div class="g mono" id="c-genre"></div>
+  <h3 id="c-title"></h3>
+  <div class="art" id="c-artist"></div>
+  <div class="desc" id="c-desc"></div>
+  <div class="meter">OBSCURITY<div class="rail"><i id="c-obs" style="background:var(--pop)"></i></div></div>
+  <div class="meter" id="c-matchwrap" style="display:none">TASTE MATCH<div class="rail"><i id="c-match" style="background:var(--beacon)"></i></div></div>
+  <div class="acts">
+    <button class="act" id="c-like">♥ Like</button>
+    <button class="act" id="c-crate">+ Crate</button>
+    <a class="act" id="c-spotify" target="_blank" rel="noopener">Spotify ↗</a>
+  </div>
+</div>
+
+<div class="hud" id="cratepanel">
+  <div class="h mono">MY CRATE</div>
+  <ul id="cratelist"></ul>
+  <button class="copy" id="cratecopy">EXPORT CRATE AS PLAYLIST</button>
+  <div class="empty" style="margin-top:8px">Copies your crate as a track list — paste it to Claude or Spotify to spin up the playlist.</div>
+</div>
+<div class="hud mono" id="legend">
+  <span><i style="background:var(--alt)"></i>ALTERNATIVE</span>
+  <span><i style="background:var(--rap)"></i>HIP-HOP / RAP</span>
+  <span><i style="background:var(--rnb)"></i>R&amp;B / SOUL</span>
+  <span><i style="background:var(--pop)"></i>POP</span>
+</div>
+<div id="tip"></div>
+
+<div class="hud" id="gems">
+  <div class="h mono">SIGNALS FOUND IN YOUR SECTOR</div>
+  <ol id="gemlist"></ol>
+  <div class="note">Ranked by taste-space fit × obscurity, max 2 per artist. Engine details &amp; honest evaluation:
+  the science page in this repo. <a href="https://open.spotify.com/playlist/1y5Ic8ONfJsqZ4hQeVA1Kg">Founder's crate on Spotify ↗</a></div>
+</div>
+
+<div class="hud" id="dock">
+  <div class="lab mono" id="docklab">CALIBRATE — PICK 3 SONGS YOU LOVE</div>
+  <div id="seeds" role="group" aria-label="Pick songs you love"></div>
+</div>
+
+<script>
+const DATA = /*__NEBULA_DATA__*/;
+const HUES = ["#7fd4ff", "#ffb45e", "#ff7fb0", "#b39bff"];
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- galaxy renderer ---------- */
+const cv = document.getElementById("sky"), ctx = cv.getContext("2d");
+let W, H, DPR;
+function resize() {
+  DPR = Math.min(devicePixelRatio || 1, 2);
+  W = innerWidth; H = innerHeight;
+  cv.width = W * DPR; cv.height = H * DPR;
+}
+resize(); addEventListener("resize", resize);
+
+const stars = DATA.stars.map((s, i) => ({
+  x: s[0], y: s[1], z: s[2], g: s[3], obs: s[4], title: s[5], artist: s[6],
+  i, tw: Math.random() * Math.PI * 2, flare: 0, gem: false
+}));
+
+// pre-rendered star sprites: crisp solid core + tight halo (not a fuzzy blob)
+function sprite(color) {
+  const c = document.createElement("canvas"); c.width = c.height = 64;
+  const g = c.getContext("2d");
+  const halo = g.createRadialGradient(32, 32, 9, 32, 32, 30);
+  halo.addColorStop(0, color + "55"); halo.addColorStop(0.45, color + "18"); halo.addColorStop(1, "transparent");
+  g.fillStyle = halo; g.fillRect(0, 0, 64, 64);
+  g.fillStyle = color; g.beginPath(); g.arc(32, 32, 9, 0, 7); g.fill();
+  g.fillStyle = "#ffffffdd"; g.beginPath(); g.arc(32, 32, 4.2, 0, 7); g.fill();
+  return c;
+}
+const SPR = HUES.map(sprite), SPR_BEACON = sprite("#fff3c4"), SPR_WHITE = sprite("#dfe8ff");
+
+const cam = { yaw: 0.6, pitch: 0.25, dist: 2.35, tYaw: 0.6, tPitch: 0.25, tDist: 2.35 };
+let beacon = null;   // {x,y,z}
+let landingGone = false;
+let mouse = { x: 0.5, y: 0.5 }, hovered = null;
+let dragging = false, lastMX = 0, lastMY = 0, autoSpin = !reduced;
+
+function project(p) {
+  const cy = Math.cos(cam.yaw), sy = Math.sin(cam.yaw);
+  const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
+  let x = p.x * cy - p.z * sy, z = p.x * sy + p.z * cy;
+  let y = p.y * cp - z * sp;   z = p.y * sp + z * cp;
+  z += cam.dist;
+  if (z < 0.12) return null;
+  const f = (Math.min(W, H) * 0.92) / z;
+  return { sx: W / 2 + x * f, sy: H / 2 + y * f, z, f };
+}
+
+function frame(t) {
+  cam.yaw += (cam.tYaw - cam.yaw) * 0.045;
+  cam.pitch += (cam.tPitch - cam.pitch) * 0.045;
+  cam.dist += (cam.tDist - cam.dist) * 0.045;
+  if (autoSpin && !dragging) cam.tYaw += 0.0009;
+
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.fillStyle = "#05060e"; ctx.fillRect(0, 0, W, H);
+
+  // mainstream core
+  const core = project({ x: 0, y: 0, z: 0 });
+  if (core) {
+    const r = core.f * 0.30;
+    const g = ctx.createRadialGradient(core.sx, core.sy, 0, core.sx, core.sy, r);
+    g.addColorStop(0, "rgba(240,244,255,.28)"); g.addColorStop(0.4, "rgba(160,180,255,.10)");
+    g.addColorStop(1, "transparent");
+    ctx.fillStyle = g; ctx.fillRect(core.sx - r, core.sy - r, r * 2, r * 2);
+  }
+
+  ctx.globalCompositeOperation = "lighter";
+  const order = stars.map(s => ({ s, p: project(s) })).filter(o => o.p).sort((a, b) => b.p.z - a.p.z);
+  hovered = null;
+  let best = 22;
+  for (const { s, p } of order) {
+    const tw = reduced ? 1 : 0.9 + 0.1 * Math.sin(t / 700 + s.tw);
+    const bright = (1.15 - s.obs) * 0.75 + s.flare;
+    const size = (1.6 + (1 - s.obs) * 3.4 + s.flare * 7) * (p.f / 560);
+    ctx.globalAlpha = Math.min(1, (0.45 + bright * 0.6) * tw);
+    ctx.drawImage(s.gem && s.flare > 0.4 ? SPR_BEACON : SPR[s.g], p.sx - size, p.sy - size, size * 2, size * 2);
+    if (s.flare > 0.002) s.flare *= 0.985;
+    const dx = p.sx - mouse.x * W, dy = p.sy - mouse.y * H, d = Math.hypot(dx, dy);
+    if (d < best) { best = d; hovered = { s, p }; }
+  }
+
+  // beacon + threads to gems
+  if (beacon) {
+    const bp = project(beacon);
+    if (bp) {
+      const bs = 14 * (bp.f / 560) * (reduced ? 1 : (1 + 0.12 * Math.sin(t / 300)));
+      ctx.globalAlpha = 0.95; ctx.drawImage(SPR_BEACON, bp.sx - bs, bp.sy - bs, bs * 2, bs * 2);
+      ctx.globalAlpha = 0.28; ctx.strokeStyle = "#fff3c4"; ctx.lineWidth = 0.7;
+      for (const s of stars) if (s.gem) {
+        const p = project(s); if (!p) continue;
+        ctx.beginPath(); ctx.moveTo(bp.sx, bp.sy); ctx.lineTo(p.sx, p.sy); ctx.stroke();
+      }
+    }
+  }
+  ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1;
+
+  // tooltip + hover audio (not while the landing overlay is up)
+  const tip = document.getElementById("tip");
+  if (!landingGone) hovered = null;
+  if (hovered) {
+    tip.innerHTML = `<b>${hovered.s.title}</b><br><span>${hovered.s.artist} · ${Math.round(hovered.s.obs * 100)}% obscure</span>`;
+    tip.style.opacity = 1;
+    tip.style.left = Math.min(hovered.p.sx + 14, W - 250) + "px";
+    tip.style.top = Math.max(8, hovered.p.sy - 40) + "px";
+    audio.hover(hovered.s);
+  } else { tip.style.opacity = 0; audio.hover(null); }
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+addEventListener("pointermove", e => {
+  mouse.x = e.clientX / W; mouse.y = e.clientY / H;
+  if (dragging) {
+    cam.tYaw += (e.clientX - lastMX) * 0.004;
+    cam.tPitch = Math.max(-1.2, Math.min(1.2, cam.tPitch + (e.clientY - lastMY) * 0.003));
+    lastMX = e.clientX; lastMY = e.clientY;
+  }
+});
+let downX = 0, downY = 0;
+cv.addEventListener("pointerdown", e => { dragging = true; lastMX = downX = e.clientX; lastMY = downY = e.clientY; });
+addEventListener("pointerup", e => {
+  const wasDrag = Math.hypot(e.clientX - downX, e.clientY - downY) > 6;
+  dragging = false;
+  if (!wasDrag && e.target === cv && hovered) openCard(hovered.s);
+});
+cv.addEventListener("wheel", e => {
+  cam.tDist = Math.max(1.1, Math.min(4, cam.tDist + e.deltaY * 0.0012));
+}, { passive: true });
+
+/* ---------- generative audio ---------- */
+const audio = (() => {
+  let ac, master, padGains = [], lastBlip = 0, lastHover = null, enabled = true, started = false;
+  const CHORDS = [ // per genre region: freqs (Hz)
+    [110.0, 164.8, 196.0, 246.9],   // alt  — Am(add9) low
+    [87.31, 130.8, 155.6, 196.0],   // rap  — F minor-ish dark
+    [98.0, 146.8, 185.0, 220.0],    // rnb  — G9 warm
+    [130.8, 196.0, 233.1, 293.7],   // pop  — C brighter
+  ];
+  const PENTA = [220, 246.9, 293.7, 329.6, 392, 440, 493.9, 587.3, 659.3, 784];
+  function start() {
+    if (started) return; started = true;
+    ac = new (window.AudioContext || window.webkitAudioContext)();
+    master = ac.createGain(); master.gain.value = 0.10;
+    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2400;
+    const delay = ac.createDelay(1); delay.delayTime.value = 0.34;
+    const fb = ac.createGain(); fb.gain.value = 0.38;
+    delay.connect(fb); fb.connect(delay);
+    master.connect(lp); lp.connect(ac.destination);
+    master.connect(delay); delay.connect(lp);
+    // pads: one voice per genre chord, crossfaded by camera focus
+    CHORDS.forEach((chord, gi) => {
+      const vg = ac.createGain(); vg.gain.value = gi === 0 ? 0.5 : 0.0; vg.connect(master);
+      padGains.push(vg);
+      chord.forEach((f, k) => {
+        const o = ac.createOscillator(); o.type = "triangle"; o.frequency.value = f;
+        o.detune.value = (k % 2 ? 4 : -4);
+        const og = ac.createGain(); og.gain.value = 0.06;
+        const lfo = ac.createOscillator(); lfo.frequency.value = 0.05 + 0.02 * k;
+        const lg = ac.createGain(); lg.gain.value = 3;
+        lfo.connect(lg); lg.connect(o.detune);
+        o.connect(og); og.connect(vg); o.start(); lfo.start();
+      });
+    });
+  }
+  function focusGenre(weights) { // [w0..w3] sums to 1
+    if (!started || !enabled) return;
+    padGains.forEach((g, i) => g.gain.setTargetAtTime(0.55 * weights[i], ac.currentTime, 1.2));
+  }
+  function hover(s) {
+    if (!started || !enabled) { lastHover = s && s.i; return; }
+    if (!s || s.i === lastHover) { if (!s) lastHover = null; return; }
+    lastHover = s.i;
+    const now = ac.currentTime;
+    if (now - lastBlip < 0.09) return;
+    lastBlip = now;
+    const vec = DATA.cand_vecs[s.i];
+    const idx = Math.abs(Math.round((vec[1] * 7 + vec[2] * 5 + vec[0] * 3) * 10)) % PENTA.length;
+    const o = ac.createOscillator(); o.type = "sine"; o.frequency.value = PENTA[idx] * (s.obs > 0.7 ? 0.5 : 1);
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0.0, now);
+    g.gain.linearRampToValueAtTime(0.09, now + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0004, now + 0.5);
+    o.connect(g); g.connect(master); o.start(now); o.stop(now + 0.55);
+  }
+  function toggle() {
+    enabled = !enabled;
+    if (started) master.gain.setTargetAtTime(enabled ? 0.10 : 0.0, ac.currentTime, 0.2);
+    return enabled;
+  }
+  return { start, hover, focusGenre, toggle };
+})();
+
+document.getElementById("mute").addEventListener("click", e => {
+  const on = audio.toggle();
+  e.currentTarget.textContent = on ? "SOUND ON" : "MUTED";
+  e.currentTarget.setAttribute("aria-pressed", on);
+});
+
+// ambient chord follows which genre dominates near screen center
+setInterval(() => {
+  const w = [0, 0, 0, 0];
+  for (const s of stars) {
+    const p = project(s); if (!p) continue;
+    const d = Math.hypot(p.sx - W / 2, p.sy - H / 2);
+    if (d < Math.min(W, H) * 0.3) w[s.g] += 1;
+  }
+  const tot = w.reduce((a, b) => a + b, 0) || 1;
+  audio.focusGenre(w.map(v => v / tot));
+}, 900);
+
+/* ---------- seeds, warp, gems ---------- */
+const picked = new Set();
+const seedsEl = document.getElementById("seeds");
+seedsEl.innerHTML = DATA.seeds.map((s, i) =>
+  `<button class="seed" data-i="${i}" aria-pressed="false">${s.title}<small>${s.artist}</small></button>`).join("");
+
+seedsEl.addEventListener("click", e => {
+  const b = e.target.closest(".seed"); if (!b) return;
+  const i = +b.dataset.i;
+  if (picked.has(i)) picked.delete(i); else if (picked.size < 6) picked.add(i); else return;
+  b.setAttribute("aria-pressed", picked.has(i));
+  document.getElementById("docklab").textContent =
+    picked.size < 3 ? `CALIBRATE — PICK ${3 - picked.size} MORE` : "TASTE LOCKED — SCANNING YOUR SECTOR";
+  if (picked.size >= 3) warp();
+  else { beacon = null; stars.forEach(s => s.gem = false); document.getElementById("gems").classList.remove("show"); }
+});
+
+function warp() {
+  const dims = DATA.dims, c = new Array(dims).fill(0);
+  for (const i of picked) for (let d = 0; d < dims; d++) c[d] += DATA.seeds[i].vec[d];
+  const n = Math.hypot(...c) || 1; for (let d = 0; d < dims; d++) c[d] /= n;
+
+  const sims = stars.map((s, i) => ({ s, sim: DATA.cand_vecs[i].reduce((a, v, d) => a + v * c[d], 0) }))
+    .sort((a, b) => b.sim - a.sim);
+  lastMatch = new Map(sims.map(r => [r.s.i, Math.max(0, r.sim)]));
+  sims.forEach((r, i) => r.pct = 1 - i / sims.length);
+  let gated = sims.filter(r => r.sim >= 0.4); if (gated.length < 15) gated = sims.slice(0, 15);
+  gated.forEach(r => r.score = r.pct * Math.pow(r.s.obs, 1));
+  gated.sort((a, b) => b.score - a.score);
+  const chosen = [], counts = {};
+  for (const r of gated) {
+    const a = r.s.artist.split(",")[0].trim().toLowerCase();
+    if ((counts[a] || 0) >= 2) continue; counts[a] = (counts[a] || 0) + 1;
+    chosen.push(r); if (chosen.length === 10) break;
+  }
+
+  stars.forEach(s => s.gem = false);
+  let bx = 0, by = 0, bz = 0;
+  for (const r of chosen) { r.s.gem = true; r.s.flare = 1.6; bx += r.s.x; by += r.s.y; bz += r.s.z; }
+  beacon = { x: bx / chosen.length, y: by / chosen.length, z: bz / chosen.length };
+
+  // fly the camera to the beacon's sector
+  cam.tYaw = Math.atan2(-beacon.x, -beacon.z) + Math.PI;
+  cam.tPitch = Math.atan2(beacon.y, Math.hypot(beacon.x, beacon.z)) * 0.9;
+  cam.tDist = 1.55;
+  autoSpin = false;
+
+  const list = document.getElementById("gemlist");
+  list.innerHTML = chosen.map((r, i) => `
+    <li data-i="${r.s.i}">
+      <span class="rk mono">${String(i + 1).padStart(2, "0")}</span>
+      <span><span class="t">${r.s.title}</span><span class="a">${r.s.artist}</span></span>
+      <span class="m mono">${Math.round(r.sim * 100)}%</span>
+    </li>`).join("");
+  list.querySelectorAll("li").forEach(li => li.addEventListener("click", () => {
+    const s = stars[+li.dataset.i]; s.flare = 2.2;
+  }));
+  document.getElementById("gems").classList.add("show");
+}
+
+document.getElementById("ignite").addEventListener("click", () => {
+  audio.start();
+  landingGone = true;
+  document.getElementById("landing").classList.add("gone");
+  const hint = document.getElementById("hint");
+  hint.classList.add("on");
+  setTimeout(() => hint.classList.remove("on"), 7000);
+});
+
+/* ---------- song card, likes & crate ---------- */
+const BLURBS = {
+  "montell fish": "Pittsburgh's gospel-kid-turned-heartbreak-alchemist — cavernous, candle-lit R&B that feels like praying about someone you shouldn't text.",
+  "dj gummy bear": "Montell Fish's mischievous alias — same aching voice, glitchier and stranger around the edges.",
+  "michael seyer": "Filipino-American bedroom-pop — hazy, nostalgic, like a summer memory you're not sure actually happened.",
+  "the backseat lovers": "Utah indie rock that builds from a whisper to a full-lung shout; garage-band heart, arena-size choruses.",
+  "briston maroney": "Nashville garage-folk with a cracked, earnest howl — songs that sound like driving away from something.",
+  "redveil": "DMV prodigy who produced his own soul-flipped beats as a teenager — warm loops, hungry verses.",
+  "jpegmafia": "Experimental rap's chaos engineer — abrasive, glitchy, thrilling.",
+  "ag club": "Bay Area rap collective that treats genre like a suggestion.",
+  "dreamer isioma": "Chicago's genre-fluid dreamer — funk, indie and alt-R&B melted into one grin.",
+  "jelani aryeh": "San Diego indie-soul with skate-video optimism — sunshine with a lump in its throat.",
+  "samia": "Confessional indie — diary entries with perfect pitch.",
+  "men i trust": "Montreal dream-pop trio: hushed vocals over the smoothest basslines in indie.",
+  "current joys": "Nick Rattigan's lo-fi heartbreak punk — VHS-grain emotion, drums like a racing pulse.",
+  "day wave": "Oakland's Jackson Phillips making surf-gaze for golden hour — every song sounds like remembering.",
+  "hazel english": "Australian dream-pop, gauzy and weightless.",
+  "sea lemon": "Seattle shoegaze — melody under six feet of shimmer.",
+  "krooked kings": "Salt Lake indie for parking-lot summers.",
+  "wave to earth": "Seoul's jazz-tinged surf-indie band — warm tape, cold ocean.",
+  "jeon jin hee": "Korean indie voice drifting through wave to earth's orbit.",
+  "smino": "St. Louis melodic rap — rubber-band flows, church-cookout warmth.",
+  "kari faux": "Little Rock's deadpan cool — bass-heavy and unbothered.",
+  "noname": "Chicago poet-rapper — jazz-soft, razor-sharp.",
+  "saba": "Chicago introspection over warm keys — grief and grace in double-time.",
+  "doja cat": "Pop-rap shapeshifter at full power.",
+  "khalid": "Texas R&B-pop — suburban loneliness with a velvet voice.",
+  "brent faiyaz": "Maryland R&B antihero — gorgeous production, terrible decisions.",
+  "jordan ward": "St. Louis R&B-pop from a former backup dancer — light on its feet.",
+  "joony": "DMV melodic rap on the rise — moody, precise, quietly ambitious.",
+  "flipturn": "Florida indie rock built for festival dusk.",
+  "peach pit": "Vancouver's self-described 'chewed bubblegum pop' — sweet, a little bruised.",
+  "sunset rollercoaster": "Taiwanese synth-city-pop — neon streets at 2am.",
+  "adam melchor": "New Jersey folk-pop — a lullaby voice with homesick strings.",
+};
+const store = {
+  get k() { try { return JSON.parse(localStorage.getItem("nebula") || "{}"); } catch { return {}; } },
+  save(v) { try { localStorage.setItem("nebula", JSON.stringify(v)); } catch {} },
+};
+let likes = new Set((store.k.likes) || []), crate = (store.k.crate) || [];
+let cardStar = null, lastMatch = null;
+
+function persist() { store.save({ likes: [...likes], crate }); }
+function crateCount() {
+  document.querySelector("#cratebtn .n").textContent = crate.length;
+}
+function describe(s) {
+  const a = s.artist.split(",")[0].trim().toLowerCase();
+  const blurb = BLURBS[a] || `${s.artist} — a ${["alternative", "hip-hop", "R&B", "pop"][s.g]} signal from the outer catalog.`;
+  const heard = s.obs > 0.8 ? "Almost nobody has this one — deep-tail territory." :
+                s.obs > 0.55 ? "Well off the mainstream flight path." :
+                s.obs > 0.3 ? "Known in its scene, invisible outside it." : "Closer to the bright core than most here.";
+  return `${blurb} ${heard}`;
+}
+function openCard(s) {
+  cardStar = s; s.flare = 2.0;
+  const genreNames = ["ALTERNATIVE", "HIP-HOP / RAP", "R&B / SOUL", "POP"];
+  document.getElementById("c-genre").textContent = genreNames[s.g];
+  document.getElementById("c-genre").style.color = HUES[s.g];
+  document.getElementById("c-title").textContent = s.title;
+  document.getElementById("c-artist").textContent = s.artist;
+  document.getElementById("c-desc").textContent = describe(s);
+  const obsEl = document.getElementById("c-obs");
+  obsEl.style.width = Math.round(s.obs * 100) + "%"; obsEl.style.background = HUES[s.g];
+  const mw = document.getElementById("c-matchwrap");
+  if (lastMatch && lastMatch.has(s.i)) {
+    mw.style.display = "";
+    document.getElementById("c-match").style.width = Math.round(lastMatch.get(s.i) * 100) + "%";
+  } else mw.style.display = "none";
+  const likeBtn = document.getElementById("c-like");
+  likeBtn.classList.toggle("liked", likes.has(s.i));
+  likeBtn.textContent = likes.has(s.i) ? "♥ Liked" : "♥ Like";
+  const crateBtn = document.getElementById("c-crate");
+  crateBtn.textContent = crate.some(c => c.i === s.i) ? "− Uncrate" : "+ Crate";
+  document.getElementById("c-spotify").href =
+    "https://open.spotify.com/search/" + encodeURIComponent(s.title + " " + s.artist.split(",")[0]);
+  document.getElementById("card").classList.add("show");
+}
+document.querySelector("#card .x").addEventListener("click", () => document.getElementById("card").classList.remove("show"));
+document.getElementById("c-like").addEventListener("click", e => {
+  if (!cardStar) return;
+  likes.has(cardStar.i) ? likes.delete(cardStar.i) : likes.add(cardStar.i);
+  e.currentTarget.classList.toggle("liked", likes.has(cardStar.i));
+  e.currentTarget.textContent = likes.has(cardStar.i) ? "♥ Liked" : "♥ Like";
+  cardStar.flare = 2.2; persist();
+});
+document.getElementById("c-crate").addEventListener("click", e => {
+  if (!cardStar) return;
+  const idx = crate.findIndex(c => c.i === cardStar.i);
+  if (idx >= 0) {
+    crate.splice(idx, 1);
+    e.currentTarget.textContent = "+ Crate";
+  } else {
+    crate.push({ i: cardStar.i, title: cardStar.title, artist: cardStar.artist });
+    e.currentTarget.textContent = "− Uncrate";
+    cardStar.flare = 2.0;
+  }
+  persist(); crateCount(); renderCrate();
+});
+function renderCrate() {
+  const ul = document.getElementById("cratelist");
+  ul.innerHTML = crate.length ? crate.map((c, k) => `
+    <li><span><span class="t">${c.title}</span><span class="a2">${c.artist}</span></span>
+    <span style="white-space:nowrap"><a href="https://open.spotify.com/search/${encodeURIComponent(c.title + " " + c.artist.split(",")[0])}" target="_blank" rel="noopener">open ↗</a>
+    <button class="rm" data-k="${k}" aria-label="remove ${c.title}">✕</button></span></li>`).join("")
+    : `<li class="empty">Click stars and hit “+ Crate” — your export list builds here.</li>`;
+  ul.querySelectorAll(".rm").forEach(b => b.addEventListener("click", () => {
+    crate.splice(+b.dataset.k, 1);
+    persist(); crateCount(); renderCrate();
+    if (cardStar) document.getElementById("c-crate").textContent =
+      crate.some(c => c.i === cardStar.i) ? "− Uncrate" : "+ Crate";
+  }));
+}
+document.getElementById("cratebtn").addEventListener("click", () => {
+  renderCrate();
+  document.getElementById("cratepanel").classList.toggle("show");
+});
+document.getElementById("cratecopy").addEventListener("click", e => {
+  const txt = "Create a Spotify playlist called \"NEBULA finds\" with these songs:\n" +
+    crate.map(c => `${c.title} — ${c.artist}`).join("\n");
+  navigator.clipboard?.writeText(txt).then(() => {
+    e.target.textContent = "COPIED — PASTE ANYWHERE ✓";
+    setTimeout(() => e.target.textContent = "EXPORT CRATE AS PLAYLIST", 1600);
+  });
+});
+crateCount();
+</script>
