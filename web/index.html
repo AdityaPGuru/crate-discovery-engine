@@ -614,7 +614,8 @@ crateCount();
   document.getElementById("cratepanel").appendChild(zone);
   const REDIRECT = location.origin + location.pathname;
   const SCOPES = "playlist-read-private playlist-modify-private playlist-modify-public";
-  const cid = () => localStorage.getItem("nebula_spotify_cid") || "";
+  const HARD_CID = "9f0f908cd188406ba5f458b8c6270b19";   // NEBULA's registered Spotify app
+  const cid = () => HARD_CID || localStorage.getItem("nebula_spotify_cid") || "";
   let token = sessionStorage.getItem("nebula_sp_token") || null;
 
   // Entry-point connect: a button on the landing itself, so linking happens
@@ -642,6 +643,12 @@ crateCount();
   }
 
   function render() {
+    // Once connected, the real export buttons replace the copy-paste fallback.
+    const copyBtn = document.getElementById("cratecopy");
+    if (copyBtn) {
+      copyBtn.style.display = token ? "none" : "";
+      if (copyBtn.nextElementSibling) copyBtn.nextElementSibling.style.display = token ? "none" : "";
+    }
     if (!cid()) {
       zone.innerHTML = `
         <details id="sp-setup" open><summary>ONE-TIME SETUP — CONNECT A SPOTIFY APP</summary>
@@ -709,9 +716,11 @@ crateCount();
       const me = await api("/me"); zone.dataset.uid = me.id;
       const pl = await api("/me/playlists?limit=50");
       const sel = zone.querySelector("#sp-list");
-      sel.innerHTML = pl.items.filter(p => p.owner.id === me.id)
-        .map(p => `<option value="${p.id}">${p.name} (${p.tracks.total})</option>`).join("") || "<option value=''>no editable playlists</option>";
-    } catch (e) { status(e.message); }
+      const mine = (pl.items || []).filter(p => p && p.owner && p.owner.id === me.id);
+      sel.innerHTML = mine.map(p =>
+        `<option value="${p.id}">${p.name}${p.tracks?.total != null ? ` (${p.tracks.total})` : ""}</option>`
+      ).join("") || "<option value=''>no editable playlists</option>";
+    } catch (e) { status("couldn't load playlists: " + e.message); }
   }
   async function exportCrate(playlistId, newName) {
     if (!crate.length) { status("crate is empty — click stars and + Crate first"); return; }
