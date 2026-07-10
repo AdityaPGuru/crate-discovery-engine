@@ -107,13 +107,13 @@
       const byName = new Map();
       let fails = 0, calls = 0, firstErr = null;
       for (const [ai, artist] of topArtists.entries()) {
-        // Big artists' search results are popularity-sorted, so the hidden
-        // stuff lives deep. Migrated /search caps limit at 25 — page deeper.
-        for (const offset of [0, 25, 50, 75, 100, 125, 150, 175]) {
+        // Live-probed against the migrated API: /search limit caps at 10 and
+        // pages come back HALF-full — page in 10s, stop only on empty.
+        for (let offset = 0; offset <= 110; offset += 10) {
           calls++;
           try {
             const q = encodeURIComponent(`artist:"${artist.name}"`);
-            const r = await api(`/search?q=${q}&type=track&limit=25&offset=${offset}`);
+            const r = await api(`/search?q=${q}&type=track&limit=10&offset=${offset}`);
             const items = r.tracks?.items || [];
             for (const t of items) {
               if (!t || t.artists?.[0]?.id !== artist.id) continue;
@@ -124,9 +124,9 @@
                 duration_ms: t.duration_ms, explicit: t.explicit, popularity: t.popularity ?? 50,
               });
             }
-            if (items.length < 25) break;   // end of this artist's catalog
+            if (items.length === 0) break;   // genuinely out of catalog
           } catch (e) { fails++; firstErr ??= e.message; }
-          await new Promise(r2 => setTimeout(r2, 60));
+          await new Promise(r2 => setTimeout(r2, 50));
         }
       }
       // Adaptive obscurity cutoff: prefer truly hidden, loosen only if thin.
@@ -374,8 +374,24 @@
     api(`/me/tracks?ids=${id}`, { method: likes.has(cardStar.i) ? "PUT" : "DELETE" }).catch(() => {});
   });
 
+  // ?probe=1 — live endpoint diagnostics through the app's own api() helper.
+  async function probeSearch() {
+    const tests = ["limit=25&offset=0", "limit=20", "limit=10", "limit=5", "limit=1", "", "limit=25&offset=50", "limit=10&offset=100"];
+    const out = [];
+    for (const t of tests) {
+      try {
+        const r = await api(`/search?q=${encodeURIComponent('artist:"Drake"')}&type=track${t ? "&" + t : ""}`);
+        out.push(`[${t || "none"}] OK n=${r.tracks?.items?.length ?? "?"}`);
+      } catch (e) { out.push(`[${t || "none"}] ${e.message.slice(0, 30)}`); }
+      await new Promise(r2 => setTimeout(r2, 100));
+    }
+    console.log("NEBULA PROBE\n" + out.join("\n"));
+    hintMsg("PROBE " + out.join("  ·  "), true);
+  }
+
   handleCallback().then(() => {
     render(); mountEntryButton(); skipLandingIfConnected();
+    if (token && new URLSearchParams(location.search).get("probe")) { probeSearch(); return; }
     if (token) buildUserGalaxy();
   });
 })();
