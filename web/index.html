@@ -702,12 +702,12 @@ crateCount();
       let fails = 0, calls = 0, firstErr = null;
       for (const [ai, artist] of topArtists.entries()) {
         // Big artists' search results are popularity-sorted, so the hidden
-        // stuff lives deep — dig 4 pages per artist and filter later.
-        for (const offset of [0, 50, 100, 150]) {
+        // stuff lives deep. Migrated /search caps limit at 25 — page deeper.
+        for (const offset of [0, 25, 50, 75, 100, 125, 150, 175]) {
           calls++;
           try {
             const q = encodeURIComponent(`artist:"${artist.name}"`);
-            const r = await api(`/search?q=${q}&type=track&limit=50&offset=${offset}`);
+            const r = await api(`/search?q=${q}&type=track&limit=25&offset=${offset}`);
             const items = r.tracks?.items || [];
             for (const t of items) {
               if (!t || t.artists?.[0]?.id !== artist.id) continue;
@@ -718,9 +718,9 @@ crateCount();
                 duration_ms: t.duration_ms, explicit: t.explicit, popularity: t.popularity ?? 50,
               });
             }
-            if (items.length < 50) break;   // end of this artist's catalog
+            if (items.length < 25) break;   // end of this artist's catalog
           } catch (e) { fails++; firstErr ??= e.message; }
-          await new Promise(r2 => setTimeout(r2, 70));
+          await new Promise(r2 => setTimeout(r2, 60));
         }
       }
       // Adaptive obscurity cutoff: prefer truly hidden, loosen only if thin.
