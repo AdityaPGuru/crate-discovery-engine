@@ -1,0 +1,201 @@
+{
+ "cv_metrics": {
+  "logistic_regression": {
+   "roc_auc": 0.615,
+   "precision_at_10": 0.6,
+   "n_scored": 148
+  },
+  "gradient_boosting": {
+   "roc_auc": 0.561,
+   "precision_at_10": 0.3,
+   "n_scored": 148
+  }
+ },
+ "caveats": [
+  "PU learning: 'negatives' are unsaved tracks from Spotify's own personalized mixes \u2014 plausible likes, not true dislikes. Reported AUC is a lower bound.",
+  "Tiny dataset (~170 tracks); metrics have wide confidence intervals.",
+  "Candidate pool is pre-filtered by Spotify's recommender (popularity/selection bias)."
+ ],
+ "top_20": [
+  {
+   "title": "Feel Good Inc.",
+   "artist": "Gorillaz",
+   "genre": "Alternative",
+   "release_year": 2005,
+   "score": 0.784,
+   "why": "+year, -unknown, -Alternative",
+   "uri": "spotify:track:0d28khcov6AiegSCpG5TuT"
+  },
+  {
+   "title": "Nikes on My Feet",
+   "artist": "Mac Miller",
+   "genre": "Hip-Hop/Rap",
+   "release_year": 2010,
+   "score": 0.726,
+   "why": "+year, -unknown, +R&B/Soul",
+   "uri": "spotify:track:0m0GzwCkfuFcxOlLjgpudo"
+  },
+  {
+   "title": "Tongue Tied",
+   "artist": "Grouplove",
+   "genre": "Alternative",
+   "release_year": 2011,
+   "score": 0.652,
+   "why": "+year, -unknown, -Alternative",
+   "uri": "spotify:track:0GO8y8jQk1PkHzS31d699N"
+  },
+  {
+   "title": "A COLD PLAY",
+   "artist": NaN,
+   "genre": null,
+   "release_year": null,
+   "score": 0.639,
+   "why": "+unknown, +R&B/Soul, +Pop",
+   "uri": "spotify:track:55Tys2QDQ6nxf2efuR1RLD"
+  },
+  {
+   "title": "I Wanna Be Yours",
+   "artist": "Arctic Monkeys",
+   "genre": "Alternative",
+   "release_year": 2013,
+   "score": 0.597,
+   "why": "+year, -unknown, -Alternative",
+   "uri": "spotify:track:5XeFesFbtLpXzIVDNQP22n"
+  },
+  {
+   "title": "Drugs You Should Try It",
+   "artist": "Travis Scott",
+   "genre": "Hip-Hop/Rap",
+   "release_year": 2014,
+   "score": 0.582,
+   "why": "+year, -unknown, +R&B/Soul",
+   "uri": "spotify:track:4b7vk8SRcYgnxpk0JOIS7r"
+  },
+  {
+   "title": "HIGHS AND LOWS",
+   "artist": NaN,
+   "genre": null,
+   "release_year": null,
+   "score": 0.567,
+   "why": "+unknown, +R&B/Soul, +Pop",
+   "uri": "spotify:track:565G1vHZu2xoxrnTyF06Qw"
+  },
+  {
+   "title": "Riptide",
+   "artist": "Vance Joy",
+   "genre": "Alternative",
+   "release_year": 2013,
+   "score": 0.565,
+   "why": "+year, -unknown, -Alternative",
+   "uri": "spotify:track:2uXlHCUbq9OMUwx3hrk06o"
+  },
+  {
+   "title": "LIL DEMON",
+   "artist": NaN,
+   "genre": null,
+   "release_year": null,
+   "score": 0.561,
+   "why": "+unknown, +R&B/Soul, +Pop",
+   "uri": "spotify:track:3aCPResPDNae3pXTocGpYe"
+  },
+  {
+   "title": "\u5927\u5c55\u9d3b\u5716(Blueprint Supreme)",
+   "artist": NaN,
+   "genre": null,
+   "release_year": null,
+   "score": 0.556,
+   "why": "+unknown, +R&B/Soul, +Pop",
+   "uri": "spotify:track:0hEWvzkgbI301JZj947gFz"
+  },
+  {
+   "title": "KING",
+   "artist": NaN,
+   "genre": null,
+   "release_year": null,
+   "score": 0.549,
+   "why": "+unknown, +R&B/Soul, +Pop",
+   "uri": "spotify:track:4LP6bmyAxdMNrqUrMpaVQ8"
+  },
+  {
+   "title": "Come a Little Closer",
+   "artist": "Cage The Elephant",
+   "genre": "Alternative",
+   "release_year": 2013,
+   "score": 0.548,
+   "why": "+year, -unknown, -Alternative",
+   "uri": "spotify:track:4sebUbjqbcgDSwG6PbSGI0"
+  },
+  {
+   "title": "BOY IN RED",
+   "artist": NaN,
+   "genre": null,
+   "release_year": null,
+   "score": 0.534,
+   "why": "+unknown, +R&B/Soul, +Pop",
+   "uri": "spotify:track:7B2ygRXyWZulEpO4G1CHZf"
+  },
+  {
+   "title": "Eternity",
+   "artist": NaN,
+   "genre": null,
+   "release_year": null,
+   "score": 0.53,
+   "why": "+unknown, +R&B/Soul, +Pop",
+   "uri": "spotify:track:6wHpLMmp98aHcV8L1JFrj8"
+  },
+  {
+   "title": "HA",
+   "artist": NaN,
+   "genre": null,
+   "release_year": null,
+   "score": 0.523,
+   "why": "+unknown, +R&B/Soul, +Pop",
+   "uri": "spotify:track:51IUpGY4rRh9fKJSzTC4qn"
+  },
+  {
+   "title": "Potential",
+   "artist": NaN,
+   "genre": null,
+   "release_year": null,
+   "score": 0.522,
+   "why": "+unknown, +R&B/Soul, +Pop",
+   "uri": "spotify:track:4cpHvqL4dvporE8JlQwkec"
+  },
+  {
+   "title": "ALL THE LOVE (feat. Andre Troutman)",
+   "artist": NaN,
+   "genre": null,
+   "release_year": null,
+   "score": 0.519,
+   "why": "+unknown, +R&B/Soul, +Pop",
+   "uri": "spotify:track:2SjnvpedDUU0Ga69bxnoCa"
+  },
+  {
+   "title": "keep steady",
+   "artist": NaN,
+   "genre": null,
+   "release_year": null,
+   "score": 0.517,
+   "why": "+unknown, +R&B/Soul, +Pop",
+   "uri": "spotify:track:2VOt88FoSGjSOuzLaeqz5k"
+  },
+  {
+   "title": "Way Too Self Aware",
+   "artist": NaN,
+   "genre": null,
+   "release_year": null,
+   "score": 0.516,
+   "why": "+unknown, +R&B/Soul, +Pop",
+   "uri": "spotify:track:2rkUhGw5iWbBY1PE5AnCl8"
+  },
+  {
+   "title": "Victory Lap",
+   "artist": NaN,
+   "genre": null,
+   "release_year": null,
+   "score": 0.51,
+   "why": "+unknown, +R&B/Soul, +Pop",
+   "uri": "spotify:track:1lbNgoJ5iMrMluCyhI4OQP"
+  }
+ ]
+}
