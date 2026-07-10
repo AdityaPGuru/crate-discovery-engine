@@ -232,7 +232,10 @@ function frame(t) {
   cam.yaw += (cam.tYaw - cam.yaw) * 0.045;
   cam.pitch += (cam.tPitch - cam.pitch) * 0.045;
   cam.dist += (cam.tDist - cam.dist) * 0.045;
-  if (autoSpin && !dragging) cam.tYaw += 0.0009;
+  if (autoSpin && !dragging) {
+    cam.tYaw += 0.0038;                                // full revolution ~28s
+    cam.tPitch += Math.sin(t / 5200) * 0.00045;        // gentle galactic sway
+  }
 
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   ctx.fillStyle = "#05060e"; ctx.fillRect(0, 0, W, H);
@@ -305,6 +308,7 @@ cv.addEventListener("pointerdown", e => { dragging = true; lastMX = downX = e.cl
 addEventListener("pointerup", e => {
   const wasDrag = Math.hypot(e.clientX - downX, e.clientY - downY) > 6;
   dragging = false;
+  if (wasDrag) autoSpin = false;                       // pilot has the stick now
   if (!wasDrag && e.target === cv && hovered) openCard(hovered.s);
 });
 cv.addEventListener("wheel", e => {
