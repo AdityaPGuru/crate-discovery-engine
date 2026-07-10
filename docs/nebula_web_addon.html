@@ -47,65 +47,94 @@
     h.textContent = m; h.classList.toggle("on", on);
   };
 
+  async function tasteProfile() {
+    // Chain of sources, most direct first — any single blocked endpoint
+    // degrades gracefully instead of killing the galaxy.
+    try {
+      const arts = (await api("/me/top/artists?limit=15&time_range=medium_term")).items || [];
+      const trs = (await api("/me/top/tracks?limit=50&time_range=medium_term")).items || [];
+      if (arts.length) return { artists: arts, tracks: trs, via: "your top artists" };
+    } catch { hintMsg("top-artists blocked by Spotify — reading your Liked Songs instead…"); }
+    const artistsFrom = async (tracks, via) => {
+      const counts = {};
+      for (const t of tracks) { const a = t?.artists?.[0]; if (a) { (counts[a.id] ??= { id: a.id, name: a.name, n: 0 }).n++; } }
+      const top = Object.values(counts).sort((x, y) => y.n - x.n).slice(0, 15);
+      if (!top.length) return null;
+      let full = [];
+      try { full = (await api(`/artists?ids=${top.map(a => a.id).join(",")}`)).artists || []; } catch {}
+      const byId = new Map(full.filter(Boolean).map(a => [a.id, a]));
+      return { artists: top.map(a => byId.get(a.id) || { id: a.id, name: a.name, genres: [] }), tracks, via };
+    };
+    try {
+      const saved = [];
+      for (let off = 0; off < 200; off += 50) {
+        const r = await api(`/me/tracks?limit=50&offset=${off}`);
+        saved.push(...(r.items || []).map(x => x.track).filter(Boolean));
+        if (!r.next) break;
+        await new Promise(r2 => setTimeout(r2, 60));
+      }
+      const p = await artistsFrom(saved, "your Liked Songs");
+      if (p) return p;
+    } catch { hintMsg("library blocked too — reading your playlists…"); }
+    const me = await api("/me");
+    const pls = ((await api("/me/playlists?limit=20")).items || []).filter(p => p && p.owner?.id === me.id).slice(0, 6);
+    const plTracks = [];
+    for (const pl of pls) {
+      let r;
+      try { r = await api(`/playlists/${pl.id}/tracks?limit=50`); }
+      catch { r = await api(`/playlists/${pl.id}/items?limit=50`); }
+      plTracks.push(...(r.items || []).map(x => x.track).filter(Boolean));
+      await new Promise(r2 => setTimeout(r2, 60));
+    }
+    const p = await artistsFrom(plTracks, "your playlists");
+    if (!p) throw new Error("no readable listening data on this account");
+    return p;
+  }
+
   async function buildUserGalaxy() {
     document.getElementById("dock").style.display = "none";   // no seed bar — it's automatic
     try {
       hintMsg("READING YOUR SPOTIFY — MAPPING YOUR GALAXY…");
-      const topArtists = (await api("/me/top/artists?limit=15&time_range=medium_term")).items || [];
-      const topTracks = (await api("/me/top/tracks?limit=50&time_range=medium_term")).items || [];
-      if (!topArtists.length) { hintMsg("not enough listening history yet — play more music and come back", true); return; }
-      const knownIds = new Set(topTracks.map(t => t.id));
-      const knownNames = new Set(topTracks.map(t => t.name.toLowerCase().replace(/\s*[\(\[].*$/, "").trim()));
+      const prof = await tasteProfile();
+      const topArtists = prof.artists;
+      const knownIds = new Set(prof.tracks.map(t => t.id));
+      const norm = s => s.toLowerCase().replace(/\s*[\(\[].*$/, "").replace(/\s*-\s*(live|remaster|acoustic|remix|sped|slowed).*$/i, "").trim();
+      const knownNames = new Set(prof.tracks.map(t => norm(t.name)));
 
-      // Deep cuts: walk each loved artist's catalog.
-      const raw = [];
-      for (const [ai, artist] of topArtists.entries()) {
-        try {
-          const albums = (await api(`/artists/${artist.id}/albums?include_groups=album,single&limit=6&market=from_token`)).items || [];
-          const seen = new Set(); const picked = [];
-          for (const al of albums) {
-            const key = al.name.toLowerCase();
-            if (!seen.has(key)) { seen.add(key); picked.push(al); }
-            if (picked.length === 4) break;
-          }
-          for (const al of picked) {
-            const tr = (await api(`/albums/${al.id}/tracks?limit=50`)).items || [];
-            for (const t of tr) {
-              if (t.artists?.[0]?.id !== artist.id) continue;
-              raw.push({ id: t.id, name: t.name, artist, artistRank: ai, duration_ms: t.duration_ms, explicit: t.explicit });
-            }
-            await new Promise(r => setTimeout(r, 60));
-          }
-        } catch { /* one bad artist shouldn't kill the galaxy */ }
-      }
-
-      // Dedupe, drop what they already know, fetch real popularity in batches.
+      // Deep cuts via /search per artist — a proven-working endpoint that
+      // returns popularity directly (no album-crawl, no /tracks batch).
+      hintMsg(`MINING THE CATALOGS OF ${topArtists.length} ARTISTS YOU LOVE…`);
       const byName = new Map();
-      for (const t of raw) {
-        const key = t.artist.id + "|" + t.name.toLowerCase().replace(/\s*[\(\[].*$/, "").replace(/\s*-\s*(live|remaster|acoustic|remix).*$/i, "").trim();
-        if (knownIds.has(t.id)) continue;
-        if (knownNames.has(t.name.toLowerCase().replace(/\s*[\(\[].*$/, "").trim())) continue;
-        if (!byName.has(key)) byName.set(key, t);
+      for (const [ai, artist] of topArtists.entries()) {
+        for (const offset of [0, 50]) {
+          try {
+            const q = encodeURIComponent(`artist:"${artist.name}"`);
+            const r = await api(`/search?q=${q}&type=track&limit=50&offset=${offset}`);
+            for (const t of (r.tracks?.items || [])) {
+              if (!t || t.artists?.[0]?.id !== artist.id) continue;
+              if (knownIds.has(t.id) || knownNames.has(norm(t.name))) continue;
+              if ((t.popularity ?? 100) > 70) continue;
+              const key = artist.id + "|" + norm(t.name);
+              if (!byName.has(key)) byName.set(key, {
+                id: t.id, name: t.name, artist, artistRank: ai,
+                duration_ms: t.duration_ms, explicit: t.explicit, popularity: t.popularity ?? 50,
+              });
+            }
+          } catch { /* one bad page shouldn't kill the galaxy */ }
+          await new Promise(r2 => setTimeout(r2, 70));
+        }
       }
       let pool = [...byName.values()];
-      hintMsg(`FOUND ${pool.length} TRACKS IN YOUR SECTOR — WEIGHING THEM…`);
-      const full = [];
-      for (let i = 0; i < pool.length && full.length < 400; i += 50) {
-        const ids = pool.slice(i, i + 50).map(t => t.id).join(",");
-        const r = await api(`/tracks?ids=${ids}`);
-        for (const t of (r.tracks || [])) if (t) full.push(t);
-        await new Promise(r => setTimeout(r, 60));
-      }
-      const popById = new Map(full.map(t => [t.id, t.popularity ?? 50]));
-      // Drop already-saved tracks.
+      const popById = new Map(pool.map(t => [t.id, t.popularity]));
+      // Drop already-saved tracks (tolerant if the endpoint is blocked).
       const savedMask = [];
       for (let i = 0; i < pool.length; i += 50) {
         const ids = pool.slice(i, i + 50).map(t => t.id).join(",");
         try { savedMask.push(...await api(`/me/tracks/contains?ids=${ids}`)); }
         catch { savedMask.push(...pool.slice(i, i + 50).map(() => false)); }
       }
-      pool = pool.filter((t, i) => !savedMask[i] && popById.has(t.id) && (popById.get(t.id) ?? 100) <= 70);
-      if (pool.length < 10) { hintMsg("your artists' catalogs are all hits you know — try again after more listening", true); return; }
+      pool = pool.filter((t, i) => !savedMask[i]).slice(0, 400);
+      if (pool.length < 10) { hintMsg("couldn't find enough hidden tracks from your artists — listen to more and come back", true); return; }
 
       // Rebuild the star field: THEIR songs only.
       stars.length = 0;
@@ -157,7 +186,7 @@
         li.addEventListener("click", () => focusStar(stars[+li.dataset.i])));
       document.getElementById("gems").classList.add("show");
       sessionStorage.removeItem("nebula_reauth");
-      hintMsg(`${stars.length} SONGS FROM YOUR ${topArtists.length} MOST-LOVED ARTISTS — ALL YOURS, NONE YOU KNOW`, true);
+      hintMsg(`${stars.length} HIDDEN SONGS FROM ${topArtists.length} ARTISTS · TASTE READ FROM ${prof.via.toUpperCase()}`, true);
       setTimeout(() => hintMsg("", false), 9000);
     } catch (e) {
       // A 403 here means the cached token predates the top-artists/library
