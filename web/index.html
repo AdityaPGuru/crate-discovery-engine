@@ -837,6 +837,7 @@ crateCount();
       if (/403/.test(String(e.message)) && !sessionStorage.getItem("nebula_reauth")) {
         sessionStorage.setItem("nebula_reauth", "1");
         token = null; sessionStorage.removeItem("nebula_sp_token");
+        try { localStorage.removeItem(AUTH_KEY); } catch {}
         hintMsg("NEBULA NEEDS UPDATED PERMISSIONS — SENDING YOU TO SPOTIFY…");
         setTimeout(login, 900);
         return;
@@ -844,7 +845,27 @@ crateCount();
       hintMsg("couldn't read your Spotify: " + e.message, true);
     }
   }
-  let token = sessionStorage.getItem("nebula_sp_token") || null;
+  // Persistent auth: refresh token in localStorage — connect once, then every
+  // visit auto-connects silently, like any real app.
+  const AUTH_KEY = "nebula_sp_auth";
+  const loadAuth = () => { try { return JSON.parse(localStorage.getItem(AUTH_KEY) || "null"); } catch { return null; } };
+  const saveAuth = a => { try { localStorage.setItem(AUTH_KEY, JSON.stringify(a)); } catch {} };
+  let token = loadAuth()?.access_token || sessionStorage.getItem("nebula_sp_token") || null;
+
+  async function refreshToken() {
+    const a = loadAuth();
+    if (!a?.refresh_token) return false;
+    const r = await fetch("https://accounts.spotify.com/api/token", {
+      method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ grant_type: "refresh_token", refresh_token: a.refresh_token, client_id: cid() }),
+    }).then(x => x.json()).catch(() => ({}));
+    if (!r.access_token) return false;
+    token = r.access_token;
+    saveAuth({ access_token: r.access_token, refresh_token: r.refresh_token || a.refresh_token,
+               expires_at: Date.now() + (r.expires_in || 3600) * 1000 });
+    sessionStorage.setItem("nebula_sp_token", token);
+    return true;
+  }
 
   // Entry-point connect: a button on the landing itself, so linking happens
   // on the way in — and a returning OAuth redirect skips the landing entirely.
@@ -931,8 +952,12 @@ crateCount();
         client_id: cid(), code_verifier: sessionStorage.getItem("nebula_sp_verifier") || "",
       }),
     }).then(r => r.json());
-    if (r.access_token) { token = r.access_token; sessionStorage.setItem("nebula_sp_token", token); }
-    else hintMsg("Spotify login failed: " + (r.error_description || r.error || "unknown"), true);
+    if (r.access_token) {
+      token = r.access_token;
+      sessionStorage.setItem("nebula_sp_token", token);
+      saveAuth({ access_token: r.access_token, refresh_token: r.refresh_token || null,
+                 expires_at: Date.now() + (r.expires_in || 3600) * 1000 });
+    } else hintMsg("Spotify login failed: " + (r.error_description || r.error || "unknown"), true);
   }
   async function api(path, opts = {}, _retry = 0) {
     const r = await fetch("https://api.spotify.com/v1" + path, {
@@ -947,7 +972,12 @@ crateCount();
       }
       return api(path, opts, _retry + 1);
     }
-    if (r.status === 401) { token = null; sessionStorage.removeItem("nebula_sp_token"); render(); throw new Error("session expired — reconnect"); }
+    if (r.status === 401) {
+      if (!opts._noRefresh && await refreshToken())
+        return api(path, { ...opts, _noRefresh: true }, _retry);
+      token = null; sessionStorage.removeItem("nebula_sp_token");
+      render(); throw new Error("session expired — reconnect");
+    }
     if (r.status === 204) return {};
     const body = await r.json().catch(() => ({}));
     if (!r.ok) {
@@ -1029,7 +1059,10 @@ crateCount();
     hintMsg("PROBE " + out.join("  ·  "), true);
   }
 
-  handleCallback().then(() => {
+  handleCallback().then(async () => {
+    // Auto-connect: renew a stale token silently before anything renders.
+    const a = loadAuth();
+    if (a?.refresh_token && (!token || Date.now() > (a.expires_at || 0) - 60e3)) await refreshToken();
     render(); mountEntryButton(); skipLandingIfConnected();
     if (token && new URLSearchParams(location.search).get("probe")) { probeSearch(); return; }
     if (token) buildUserGalaxy();
