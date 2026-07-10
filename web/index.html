@@ -617,6 +617,30 @@ crateCount();
   const cid = () => localStorage.getItem("nebula_spotify_cid") || "";
   let token = sessionStorage.getItem("nebula_sp_token") || null;
 
+  // Entry-point connect: a button on the landing itself, so linking happens
+  // on the way in — and a returning OAuth redirect skips the landing entirely.
+  function mountEntryButton() {
+    const hero = document.querySelector("#landing .hero");
+    if (!hero) return;
+    const b = document.createElement("button");
+    b.className = "ignite"; b.id = "sp-entry";
+    b.style.cssText = "background:#1fdf64;color:#04240f;margin-left:10px";
+    b.textContent = token ? "SPOTIFY CONNECTED ✓" : "⏻ CONNECT SPOTIFY";
+    document.getElementById("ignite").after(b);
+    b.onclick = () => {
+      if (token) { document.getElementById("ignite").click(); return; }
+      if (cid()) { login(); return; }
+      document.getElementById("ignite").click();          // enter the galaxy…
+      document.getElementById("cratepanel").classList.add("show");  // …and open setup
+    };
+  }
+  function skipLandingIfConnected() {
+    if (!token) return;
+    const ig = document.getElementById("ignite");
+    if (ig) setTimeout(() => ig.click(), 400);            // straight into the galaxy
+    document.getElementById("cratepanel").classList.add("show");
+  }
+
   function render() {
     if (!cid()) {
       zone.innerHTML = `
@@ -713,7 +737,7 @@ crateCount();
       loadPlaylists();
     } catch (e) { status("export failed: " + e.message); }
   }
-  handleCallback().then(render);
+  handleCallback().then(() => { render(); mountEntryButton(); skipLandingIfConnected(); });
 })();
 </script>
 </body></html>
