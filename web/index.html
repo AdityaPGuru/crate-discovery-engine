@@ -673,15 +673,19 @@ crateCount();
         <button class="btn green" id="sp-create">EXPORT CRATE → NEW PLAYLIST</button>
         <select id="sp-list" aria-label="choose an existing playlist"><option>loading your playlists…</option></select>
         <button class="btn ghost" id="sp-add">ADD CRATE TO SELECTED PLAYLIST</button>
-        <div id="sp-status" class="ok">connected ✓</div>`;
+        <div id="sp-status" class="ok">connected ✓</div>
+        <button class="btn ghost" id="sp-reauth" style="margin-top:7px">↻ RECONNECT (fresh permissions)</button>`;
       zone.querySelector("#sp-create").onclick = () => exportCrate(null, zone.querySelector("#sp-name").value || "NEBULA finds");
       zone.querySelector("#sp-add").onclick = () => exportCrate(zone.querySelector("#sp-list").value, null);
+      zone.querySelector("#sp-reauth").onclick = () => {
+        token = null; sessionStorage.removeItem("nebula_sp_token"); login(true);
+      };
       loadPlaylists();
     }
   }
   const status = (m, ok) => { const el = zone.querySelector("#sp-status"); if (el) { el.textContent = m; el.classList.toggle("ok", !!ok); } };
 
-  async function login() {
+  async function login(force) {
     const verifier = [...crypto.getRandomValues(new Uint8Array(48))].map(b => "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"[b % 62]).join("");
     sessionStorage.setItem("nebula_sp_verifier", verifier);
     const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier));
@@ -689,6 +693,7 @@ crateCount();
     location.href = "https://accounts.spotify.com/authorize?" + new URLSearchParams({
       client_id: cid(), response_type: "code", redirect_uri: REDIRECT,
       scope: SCOPES, code_challenge_method: "S256", code_challenge: challenge,
+      ...(force ? { show_dialog: "true" } : {}),
     });
   }
   async function handleCallback() {
@@ -711,7 +716,11 @@ crateCount();
     if (r.status === 401) { token = null; sessionStorage.removeItem("nebula_sp_token"); render(); throw new Error("session expired — reconnect"); }
     if (r.status === 204) return {};
     const body = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error(body.error?.message || `Spotify error ${r.status}`);
+    if (!r.ok) {
+      let m = `${r.status}: ${body.error?.message || "unknown error"}`;
+      if (r.status === 403) m += " — if this account didn't create the Spotify app, add its email under User Management in the app's dashboard settings, then RECONNECT";
+      throw new Error(m);
+    }
     return body;
   }
   async function loadPlaylists() {
