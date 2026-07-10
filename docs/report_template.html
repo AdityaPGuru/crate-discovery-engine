@@ -74,6 +74,10 @@
   .ranklist .band .rail i { position: absolute; top: 0; height: 100%; border-radius: 2px; background: var(--s1); opacity: .45; }
   .ranklist .band .rail b { position: absolute; top: -2px; width: 8px; height: 8px; border-radius: 50%; background: var(--s1); transform: translateX(-4px); }
   .modenote { font-size: 12px; color: var(--muted); margin-top: 12px; max-width: 44ch; }
+  .seedgrid { gap: 7px; }
+  .seedgrid .chip { line-height: 1.25; padding: 7px 12px; text-align: left; }
+  .seedgrid .chip small { display: block; font-size: 11px; opacity: .75; }
+  .pricing .tile .n { line-height: 1.5; }
   #tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--page); font-size: 12.5px; padding: 7px 10px; border-radius: 6px; opacity: 0; transition: opacity .12s; max-width: 280px; z-index: 10; line-height: 1.45; }
   @media (prefers-reduced-motion: reduce) { #tip, .ranklist li { transition: none; } }
 
@@ -107,13 +111,38 @@
 </style>
 
 <div class="wrap">
-  <p class="eyebrow">Crate · a discovery engine prototype</p>
-  <h1>Songs the algorithm underrates, ranked for one listener</h1>
-  <p class="standfirst">Spotify's recommender optimizes for what you'll press play on next.
-  Crate optimizes for what you'll <em>love that almost nobody plays</em> — a taste model with
-  uncertainty discipline, pointed at 321 low-popularity tracks it has never seen.</p>
-  <p class="byline">Built on my real listening data · model + method reviewed adversarially by a second model (GPT-5 Codex) · July 2026</p>
+  <p class="eyebrow">Crate · hear it first</p>
+  <h1>The songs you'd love if anyone ever played them for you</h1>
+  <p class="standfirst">Every recommender optimizes for what you'll press play on next — so everyone
+  hears the same 600 songs. Crate is a discovery engine that hunts the catalog's long tail for
+  <em>undervalued</em> tracks scored against <em>your</em> taste, with uncertainty honest enough to
+  bet on. Pick a few songs below and build yours.</p>
+  <p class="byline">Working prototype on real data · engine design adversarially reviewed by a second model (GPT-5 Codex) · July 2026 ·
+  <a href="https://open.spotify.com/playlist/1y5Ic8ONfJsqZ4hQeVA1Kg">hear my crate as a Spotify playlist ↗</a></p>
 
+  <div class="console" id="demo">
+    <p class="panel-title" style="font-size:16px">Build your crate</p>
+    <p class="panel-sub">Tap 3–6 songs you love. Crate finds you hidden gems from 321 low-play tracks — right here in the page, no account, no server.</p>
+    <div class="chips seedgrid" id="seedgrid" role="group" aria-label="Pick songs you love"></div>
+    <div class="applayout" style="margin-top:18px">
+      <div>
+        <ol class="ranklist" id="demolist"><li style="cursor:default"><span class="rk">·</span><span><span class="t">Pick at least 3 songs</span><br><span class="a">your crate appears here instantly</span></span><span></span></li></ol>
+      </div>
+      <div>
+        <div class="ctl" style="margin-bottom:14px">
+          <label for="gamma2">How deep should we dig? (γ)</label>
+          <div class="dial">
+            <input type="range" id="gamma2" min="0" max="2.5" step="0.1" value="1">
+            <output id="gamma2-out" for="gamma2">γ = 1.0</output>
+          </div>
+        </div>
+        <p class="modenote">This demo ranks by taste-space similarity (a 16-dim embedding of title, artist, genre, era and duration) × obscurity<sup>γ</sup>, capped at 2 per artist. The full product trains a per-user preference model with bootstrap uncertainty on your whole listening history — that's the case study below.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2>Case study — my crate, running live</h2>
+  <p class="kicker">The full engine: a preference model trained on my real Spotify library, pointed at the same candidate pool.</p>
   <div class="console">
     <div class="statstrip">
       <span><b id="st-n">—</b> candidate tracks</span>
@@ -168,9 +197,18 @@
     </div>
   </div>
 
-  <p class="kicker" style="margin-top:14px">Why this could be a product: the same engine, per user, is a "deep cuts made of your taste"
-  subscription surface for listeners — and read the other way, an A&amp;R scouting screen: undervalued tracks with
-  high predicted affinity for a taste cluster are exactly the songs labels want to find before the crowd does.</p>
+  <h2>The business it implies</h2>
+  <p class="kicker">Same engine, two customers — concept pricing to make the shape concrete.</p>
+  <div class="tiles pricing">
+    <div class="tile"><div class="l">Demo</div><div class="v">Free</div>
+      <div class="n">What you just used: seed songs → instant crate. The hook that earns a Spotify connect.</div></div>
+    <div class="tile"><div class="l">Listener</div><div class="v">$4<span style="font-size:14px;color:var(--muted)">/mo</span></div>
+      <div class="n">Connect Spotify → per-user preference model → a weekly "Crate Drop" playlist, auto-synced. Every play/skip retrains it (the active-learning loop).</div></div>
+    <div class="tile"><div class="l">A&amp;R Pro</div><div class="v">$99<span style="font-size:14px;color:var(--muted)">/mo</span></div>
+      <div class="n">Read the engine backwards: undervalued tracks with high predicted affinity for a taste cluster, surfaced with momentum + stability bands — find the song before the crowd does.</div></div>
+  </div>
+  <p class="kicker" style="margin-top:10px">The moat isn't the model — it's the label stream: every crate interaction is a true preference label
+  no engagement-optimizing recommender collects, because skips inside comfort-zone playlists teach you nothing about the tail.</p>
 
   <div class="narrow">
 
@@ -255,8 +293,75 @@
 
 <script>
 const GEMS = /*__GEMS_DATA__*/;
+const DEMO = /*__DEMO_DATA__*/;
 
 const frontier = GEMS.frontier;
+
+/* ---------- build-your-crate demo ---------- */
+(function demo() {
+  const grid = document.getElementById("seedgrid");
+  const list = document.getElementById("demolist");
+  const dial = document.getElementById("gamma2");
+  const out = document.getElementById("gamma2-out");
+  const picked = new Set();
+
+  grid.innerHTML = DEMO.seeds.map((s, i) =>
+    `<button class="chip" data-i="${i}" aria-pressed="false">${s.title}<small>${s.artist}</small></button>`
+  ).join("");
+
+  function render() {
+    if (picked.size < 3) {
+      list.innerHTML = `<li style="cursor:default"><span class="rk">·</span><span><span class="t">Pick ${3 - picked.size} more song${picked.size === 2 ? "" : "s"}</span><br><span class="a">your crate appears here instantly</span></span><span></span></li>`;
+      return;
+    }
+    const dims = DEMO.dims;
+    const c = new Array(dims).fill(0);
+    for (const i of picked) for (let d = 0; d < dims; d++) c[d] += DEMO.seeds[i].vec[d];
+    const norm = Math.hypot(...c) || 1;
+    for (let d = 0; d < dims; d++) c[d] /= norm;
+
+    const g = parseFloat(dial.value);
+    const sims = frontier.map((t, i) => {
+      let s = 0;
+      for (let d = 0; d < dims; d++) s += c[d] * DEMO.cand_vecs[i][d];
+      return { t, sim: s };
+    }).sort((a, b) => b.sim - a.sim);
+    sims.forEach((r, i) => r.pct = 1 - i / sims.length);
+    // Obscurity is a tiebreaker among genuine matches, not a way in for
+    // non-matches: gate on absolute taste-space fit first.
+    let gated = sims.filter(r => r.sim >= 0.4);
+    if (gated.length < 15) gated = sims.slice(0, 15);
+    gated.forEach(r => r.score = r.pct * Math.pow(r.t.obscurity, g));
+    gated.sort((a, b) => b.score - a.score);
+
+    const chosen = [], counts = {};
+    for (const r of gated) {
+      const a = r.t.artist.split(",")[0].trim().toLowerCase();
+      if ((counts[a] || 0) >= 2) continue;
+      counts[a] = (counts[a] || 0) + 1;
+      chosen.push(r);
+      if (chosen.length === 10) break;
+    }
+    list.innerHTML = chosen.map((r, i) => `
+      <li style="cursor:default">
+        <span class="rk">${i + 1}</span>
+        <span><span class="t">${r.t.title}</span><br><span class="a">${r.t.artist} · ${r.t.genre}</span></span>
+        <span class="band"><span class="lbl">${Math.round(r.sim * 100)}% match</span>
+          <span class="rail"><i style="left:0; width:${Math.max(0, r.sim) * 100}%"></i></span>
+        </span>
+      </li>`).join("");
+  }
+
+  grid.addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    const i = +b.dataset.i;
+    if (picked.has(i)) picked.delete(i); else if (picked.size < 6) picked.add(i); else return;
+    b.setAttribute("aria-pressed", picked.has(i));
+    render();
+  });
+  dial.addEventListener("input", () => { out.textContent = "γ = " + parseFloat(dial.value).toFixed(1); render(); });
+  render();
+})();
 const state = { gamma: 1.0, risk: "pref_med", genre: "all", hl: null };
 document.getElementById("st-n").textContent = frontier.length;
 document.getElementById("st-a").textContent = new Set(frontier.map(d => d.artist.split(",")[0].trim())).size;
