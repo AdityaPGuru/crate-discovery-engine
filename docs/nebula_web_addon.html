@@ -163,12 +163,19 @@
       pool = pool.filter((t, i) => !savedMask[i]).slice(0, 400);
       if (pool.length < 10) {
         if (rateLimited >= 4) {
-          // Don't make the user do anything — cool off and go again ourselves.
-          for (let s = 45; s > 0; s--) {
-            hintMsg(`SPOTIFY SPEED LIMIT — AUTO-RETRYING YOUR GALAXY IN ${s}s…`);
-            await new Promise(r2 => setTimeout(r2, 1000));
+          // Cool off and retry — but only twice. Endless retries against a
+          // quota-suspended app just keep the penalty alive.
+          const tries = +(sessionStorage.getItem("nebula_rl_tries") || 0);
+          if (tries < 2) {
+            sessionStorage.setItem("nebula_rl_tries", tries + 1);
+            for (let s = 60; s > 0; s--) {
+              hintMsg(`SPOTIFY SPEED LIMIT — AUTO-RETRYING YOUR GALAXY IN ${s}s… (${tries + 1}/2)`);
+              await new Promise(r2 => setTimeout(r2, 1000));
+            }
+            return buildUserGalaxy();
           }
-          return buildUserGalaxy();
+          hintMsg("Spotify has suspended this app's quota for now — it resets on its own (usually by the next day). Nothing to fix on your end; come back later and it will just work.", true);
+          return;
         }
         hintMsg(fails ? `mining blocked (${fails}/${calls} calls failed): ${firstErr}` :
           `only ${pool.length} unknown tracks found across your artists — you really do know their catalogs`, true);
