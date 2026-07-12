@@ -188,17 +188,25 @@
         }
       }
 
-      // A — genre fingerprint (new artists in your sound); skip a genre fast
-      // if Spotify's genre filter has no results for its tag
-      outer: for (const [gi, g] of topGenres.slice(0, 4).entries()) {
-        for (let offset = 0; offset <= 30; offset += 10) {
+      // A — genre fingerprint (new artists in your sound). Spotify's genre
+      // filter silently ignores microgenre tags ("pov: indie"), so each tag
+      // gets a normalized form plus its parent word as fallback (Codex).
+      const genreQueries = [];
+      for (const g of topGenres.slice(0, 4)) {
+        const clean = g.replace(/[^a-z0-9 &-]/gi, "").trim().toLowerCase();
+        if (clean && !genreQueries.includes(clean)) genreQueries.push(clean);
+        const parent = clean.split(" ").pop();
+        if (parent && parent.length > 2 && !genreQueries.includes(parent)) genreQueries.push(parent);
+      }
+      outer: for (const [gi, g] of genreQueries.slice(0, 6).entries()) {
+        for (let offset = 0; offset <= 20; offset += 10) {
           calls++;
           try {
             const r = await api(`/search?q=${encodeURIComponent(`genre:"${g}"`)}&type=track&limit=10&offset=${offset}`);
             rateLimited = 0;
             const items = r.tracks?.items || [];
-            for (const t of items) consider(t, 8 + gi, g, false, false);
-            if (items.length === 0) break;
+            for (const t of items) consider(t, 12 + gi, g, false, false);
+            if (items.length === 0) break;   // unindexed tag — move on fast
           } catch (e) {
             fails++; firstErr ??= e.message;
             if (/429/.test(e.message) && ++rateLimited >= 4) break outer;
