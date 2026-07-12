@@ -757,9 +757,11 @@ crateCount();
 
       // C — your own artists' under-the-radar tracks (any artist is allowed;
       // the bar is plays, not familiarity)
-      dcMine: for (const [ai, artist] of topArtists.slice(0, 8).entries()) {
+      dcMine: for (const [ai, artist] of topArtists.slice(0, 12).entries()) {
+        // Deep paging — big artists' under-the-radar tracks live past the
+        // hits, and this exact depth produced the verified 400-star build.
         let got = 0;
-        for (let offset = 0; offset <= 30 && got < 10; offset += 10) {
+        for (let offset = 0; offset <= 110 && got < 15; offset += 10) {
           calls++;
           try {
             const r = await api(`/search?q=${encodeURIComponent(`artist:"${artist.name}"`)}&type=track&limit=10&offset=${offset}`);
@@ -780,9 +782,10 @@ crateCount();
         }
       }
 
-      // A — genre fingerprint (new artists in your sound)
-      outer: for (const [gi, g] of topGenres.entries()) {
-        for (let offset = 0; offset <= 40; offset += 10) {
+      // A — genre fingerprint (new artists in your sound); skip a genre fast
+      // if Spotify's genre filter has no results for its tag
+      outer: for (const [gi, g] of topGenres.slice(0, 4).entries()) {
+        for (let offset = 0; offset <= 30; offset += 10) {
           calls++;
           try {
             const r = await api(`/search?q=${encodeURIComponent(`genre:"${g}"`)}&type=track&limit=10&offset=${offset}`);
@@ -797,27 +800,8 @@ crateCount();
           await new Promise(r2 => setTimeout(r2, 120));
         }
       }
-      // B — playlist co-occurrence around your favorite artists
-      if (rateLimited < 4) coMine: for (const [ai, artist] of topArtists.slice(0, 5).entries()) {
-        calls++;
-        try {
-          const pr = await api(`/search?q=${encodeURIComponent(artist.name)}&type=playlist&limit=5`);
-          const pls = (pr.playlists?.items || []).filter(Boolean).slice(0, 2);
-          for (const pl of pls) {
-            calls++;
-            let r = null;
-            try { r = await api(`/playlists/${pl.id}/tracks?limit=50`); }
-            catch { try { r = await api(`/playlists/${pl.id}/tracks?limit=10`); } catch (e2) { fails++; firstErr ??= e2.message; if (/429/.test(e2.message) && ++rateLimited >= 4) break coMine; } }
-            for (const it of (r?.items || [])) consider(it?.track, 8 + topGenres.length + (ai % 3), (artist.genres || [])[0] || "similar", true, false);
-            await new Promise(r2 => setTimeout(r2, 120));
-          }
-        } catch (e) {
-          fails++; firstErr ??= e.message;
-          if (/429/.test(e.message) && ++rateLimited >= 4) break coMine;
-        }
-      }
-      // co-occurring finds are the strongest "similar taste" signal — boost them
-      for (const v of byName.values()) if (v.co) v.popularity = Math.min(v.popularity, 55);
+      // (playlist co-occurrence miner removed — the 2026 migration 403-blocks
+      // dev apps from reading third-party public playlists' tracks)
       // Under-the-radar cutoff: popularity ≤ 40 ≈ the sub-500K-stream tier
       // (Spotify's API exposes no raw play counts — popularity is the proxy).
       // Loosen a notch at a time only if the pool runs thin.
