@@ -91,7 +91,7 @@
     return p;
   }
 
-  const GALAXY_CACHE = "nebula_galaxy_v3";   // v3: discovery pool (new artists only)
+  const GALAXY_CACHE = "nebula_galaxy_v4";   // v4: under-~500K-plays tier, any artist
   async function buildUserGalaxy() {
     document.getElementById("dock").style.display = "none";   // no seed bar — it's automatic
     try {
@@ -146,22 +146,47 @@
 
       const byName = new Map();
       let fails = 0, calls = 0, firstErr = null, rateLimited = 0;
-      const consider = (t, clusterIdx, genreTag, co) => {
+      const consider = (t, clusterIdx, genreTag, co, own) => {
         const a = t?.artists?.[0];
-        if (!a || knownArtists.has(a.id)) return;                 // no artists you know
-        if (knownIds.has(t.id) || knownNames.has(norm(t.name))) return;
-        if ((t.popularity ?? 100) > 60) return;                   // stay obscure
+        if (!a) return;
+        if (knownIds.has(t.id) || knownNames.has(norm(t.name))) return;  // never songs you know
+        if ((t.popularity ?? 100) > 60) return;                          // collection ceiling
         const key = a.id + "|" + norm(t.name);
         const prev = byName.get(key);
-        if (prev) { if (co) prev.co = (prev.co || 0) + 1; return; }
+        if (prev) { if (co) prev.co = (prev.co || 0) + 1; prev.own ||= !!own; return; }
         byName.set(key, {
           id: t.id, name: t.name, artistId: a.id, artistName: a.name,
-          genres: [genreTag], artistRank: clusterIdx, co: co ? 1 : 0,
+          genres: [genreTag], artistRank: clusterIdx, co: co ? 1 : 0, own: !!own,
           duration_ms: t.duration_ms, explicit: t.explicit, popularity: t.popularity ?? 50,
         });
       };
 
-      // A — genre fingerprint
+      // C — your own artists' under-the-radar tracks (any artist is allowed;
+      // the bar is plays, not familiarity)
+      dcMine: for (const [ai, artist] of topArtists.slice(0, 8).entries()) {
+        let got = 0;
+        for (let offset = 0; offset <= 30 && got < 10; offset += 10) {
+          calls++;
+          try {
+            const r = await api(`/search?q=${encodeURIComponent(`artist:"${artist.name}"`)}&type=track&limit=10&offset=${offset}`);
+            rateLimited = 0;
+            const items = r.tracks?.items || [];
+            for (const t of items) {
+              if (t?.artists?.[0]?.id !== artist.id) continue;
+              const before = byName.size;
+              consider(t, ai, (artist.genres || [])[0] || "your artists", false, true);
+              if (byName.size > before) got++;
+            }
+            if (items.length === 0) break;
+          } catch (e) {
+            fails++; firstErr ??= e.message;
+            if (/429/.test(e.message) && ++rateLimited >= 4) break dcMine;
+          }
+          await new Promise(r2 => setTimeout(r2, 120));
+        }
+      }
+
+      // A — genre fingerprint (new artists in your sound)
       outer: for (const [gi, g] of topGenres.entries()) {
         for (let offset = 0; offset <= 40; offset += 10) {
           calls++;
@@ -169,7 +194,7 @@
             const r = await api(`/search?q=${encodeURIComponent(`genre:"${g}"`)}&type=track&limit=10&offset=${offset}`);
             rateLimited = 0;
             const items = r.tracks?.items || [];
-            for (const t of items) consider(t, gi, g, false);
+            for (const t of items) consider(t, 8 + gi, g, false, false);
             if (items.length === 0) break;
           } catch (e) {
             fails++; firstErr ??= e.message;
@@ -189,7 +214,7 @@
             let r = null;
             try { r = await api(`/playlists/${pl.id}/tracks?limit=50`); }
             catch { try { r = await api(`/playlists/${pl.id}/tracks?limit=10`); } catch (e2) { fails++; firstErr ??= e2.message; if (/429/.test(e2.message) && ++rateLimited >= 4) break coMine; } }
-            for (const it of (r?.items || [])) consider(it?.track, topGenres.length + (ai % 3), (artist.genres || [])[0] || "similar", true);
+            for (const it of (r?.items || [])) consider(it?.track, 8 + topGenres.length + (ai % 3), (artist.genres || [])[0] || "similar", true, false);
             await new Promise(r2 => setTimeout(r2, 120));
           }
         } catch (e) {
@@ -199,10 +224,12 @@
       }
       // co-occurring finds are the strongest "similar taste" signal — boost them
       for (const v of byName.values()) if (v.co) v.popularity = Math.min(v.popularity, 55);
-      // Adaptive obscurity cutoff: prefer truly hidden, loosen only if thin.
+      // Under-the-radar cutoff: popularity ≤ 40 ≈ the sub-500K-stream tier
+      // (Spotify's API exposes no raw play counts — popularity is the proxy).
+      // Loosen a notch at a time only if the pool runs thin.
       let all = [...byName.values()].sort((a, b) => a.popularity - b.popularity);
-      let cap = 70; pool = all.filter(t => t.popularity <= cap);
-      while (pool.length < 80 && cap < 96) { cap += 5; pool = all.filter(t => t.popularity <= cap); }
+      let cap = 40; pool = all.filter(t => t.popularity <= cap);
+      while (pool.length < 80 && cap < 60) { cap += 5; pool = all.filter(t => t.popularity <= cap); }
       // Drop already-saved tracks (tolerant if the endpoint is blocked).
       const savedMask = [];
       for (let i = 0; i < pool.length; i += 50) {
@@ -254,7 +281,7 @@
           x: Math.cos(th) * Math.cos(ph) * r + jx, y: Math.sin(ph) * r * 0.8 + jy, z: Math.sin(th) * Math.cos(ph) * r + jz,
           g: GENRE_BUCKET(t.genres), obs, title: t.name, artist: t.artistName,
           i, tw: hashRnd(t.id, 6) * 6.28, flare: 0, gem: false, uri: "spotify:track:" + t.id,
-          affinity: (t.co ? 1 : 0.65) / (1 + t.artistRank / 6),
+          affinity: ((t.own ? 1 : 0.7) + (t.co ? 0.3 : 0)) / (1 + t.artistRank / 6),
         });
         const v = new Array(16).fill(0).map((_, d) => hashRnd(t.id, 10 + d) - 0.5);
         v[0] = Math.cos(th); v[1] = Math.sin(th); vecs.push(v);
@@ -294,7 +321,7 @@
       sessionStorage.removeItem("nebula_reauth");
       sessionStorage.removeItem("nebula_rl_tries");
       try { localStorage.removeItem("nebula_build_lock"); localStorage.removeItem("nebula_cooloff_until"); } catch {}
-      hintMsg(`${stars.length} SONGS BY ${new Set(pool.map(t => t.artistId)).size} ARTISTS YOU'VE NEVER PLAYED — ALL MATCHED TO ${prof.via.toUpperCase()}`, true);
+      hintMsg(`${stars.length} UNDER-THE-RADAR SONGS (≈ SUB-500K TIER) FROM ${new Set(pool.map(t => t.artistId)).size} ARTISTS — MATCHED TO ${prof.via.toUpperCase()}`, true);
       setTimeout(() => hintMsg("", false), 9000);
     } catch (e) {
       // A 403 here means the cached token predates the top-artists/library
